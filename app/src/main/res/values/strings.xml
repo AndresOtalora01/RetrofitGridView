@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RetrofitGridView</string>
+    <string name="gutendex_books">GUTENDEX BOOKS</string>
+    <string name="page">Página</string>
+    <string name="chapter">capitulo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu">Menú</string>
+</resources>
