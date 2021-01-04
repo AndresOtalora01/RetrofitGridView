@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.OnB
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         recyclerView = findViewById(R.id.recyclerView);
         getAllBooks();
     }
@@ -69,4 +70,78 @@ public class MainActivity extends AppCompatActivity implements CustomAdapter.OnB
     public void onBookClick(int position) {
         startActivity(new Intent(this, BookActivity.class).putExtra("data", booksResponseList.getResults().get(position)));
     }
+    
+    private void getNextBooks() {
+        Call<BooksResponse> booksResponse = ApiClient.getInterface().getNextBooks(booksResponseList.getNext());
+        booksResponse.enqueue(new Callback<BooksResponse>() {
+            @Override
+            public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
+
+                if (response.code() == 200) {
+
+                    Log.d("Buscaminas", response.body().toString());
+
+                    booksResponseList = response.body();
+                    Log.d("Buscaminas", booksResponseList.getResults().get(2).getFormats().toString());
+                    CustomAdapter customAdapter = new CustomAdapter(booksResponseList.getResults(), MainActivity.this, MainActivity.this::onBookClick);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                    recyclerView.setAdapter(customAdapter);
+                } else {
+                    String message = "ERROR. Try again later";
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                    Log.d("Buscaminas", "no funciona");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<BooksResponse> call, Throwable t) {
+                String message = t.getLocalizedMessage();
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getPreviousBooks() {
+        Call<BooksResponse> booksResponse = ApiClient.getInterface().getPreviousBooks(booksResponseList.getPrevious());
+        booksResponse.enqueue(new Callback<BooksResponse>() {
+            @Override
+            public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
+
+                if (response.code() == 200) {
+
+                    Log.d("Buscaminas", response.body().toString());
+
+                    booksResponseList = response.body();
+                    Log.d("Buscaminas", booksResponseList.getResults().get(2).getFormats().toString());
+                    CustomAdapter customAdapter = new CustomAdapter(booksResponseList.getResults(), MainActivity.this, MainActivity.this::onBookClick);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                    recyclerView.setAdapter(customAdapter);
+                } else {
+                    String message = "ERROR. Try again later";
+                    return;
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<BooksResponse> call, Throwable t) {
+              //  String message = t.getLocalizedMessage();
+              //  Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                return;
+            }
+        });
+    }
+
+    public void onNextClick(View view) {
+        getNextBooks();
+    }
+
+    public void onPreviousClick (View view) {
+        getPreviousBooks();
+
+    }
+
 }

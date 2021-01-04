@@ -1,6 +1,8 @@
 package com.example.retrofitgridview;
 
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.SeekBar;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -18,14 +20,19 @@ public class PageFragmentAdapter extends FragmentPagerAdapter {
     private String newPageSpacing = "\n\n\n";
     private int txtSize = 12;
     private List<PageFragment> pageFragmentList = new ArrayList<>();
+    private ImageFragment imageFragment;
+    private String imageUrl;
+
 
     // private Long totalTime = 0L;
-    public PageFragmentAdapter(FragmentManager fragmentManager, int charMax, String content) {
+    public PageFragmentAdapter(FragmentManager fragmentManager, int charMax, String content,String imageUrl) {
         super(fragmentManager);
         this.charMax = charMax;
         this.content = content;
         this.parts = getParts(content, charMax);
+        this.imageUrl = imageUrl;
     }
+
 
     // Returns total number of pages
     @Override
@@ -37,6 +44,10 @@ public class PageFragmentAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Log.d("getItem", position + "");
+        if(position == 0) {
+            imageFragment = ImageFragment.newInstance(imageUrl);
+            return imageFragment;
+        }
         PageFragment pageFragment = PageFragment.newInstance(position, parts.get(position), txtSize);
         pageFragmentList.add(pageFragment);
         return pageFragment;

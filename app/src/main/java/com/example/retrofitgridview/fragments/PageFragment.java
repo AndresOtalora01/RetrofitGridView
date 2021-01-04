@@ -7,12 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.retrofitgridview.ImageFragment;
 import com.example.retrofitgridview.R;
 
 public class PageFragment extends Fragment {
@@ -20,6 +23,7 @@ public class PageFragment extends Fragment {
     private String content;
     private int page;
     private TextView tvContent;
+    private ImageView image;
     private int txtSize = 12;
     // newInstance constructor for creating fragment with arguments
     public static PageFragment newInstance(int page, String title, int txtSize) {
@@ -54,6 +58,8 @@ public class PageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         TextView tvPageNumber = (TextView) view.findViewById(R.id.tvPageNumber);
         tvPageNumber.setText(page + "");
+        image = (ImageView) view.findViewById(R.id.ivCover);
+        image.setVisibility(View.GONE);
         tvContent = (TextView) view.findViewById(R.id.tvPageContent);
         tvContent.setText(content);
         tvContent.setTextSize(txtSize);

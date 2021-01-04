@@ -53,12 +53,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView iconImage;
         TextView title;
+        TextView author;
         OnBookListener onBookListener;
 
         ViewHolder(View itemView, OnBookListener onBookListener) {
             super(itemView);
             iconImage = (ImageView) itemView.findViewById(R.id.iconImageView);
             title = itemView.findViewById(R.id.tvTitle);
+            author = itemView.findViewById(R.id.tvAuthor);
             this.onBookListener = onBookListener;
             itemView.setOnClickListener(this);
         }
@@ -66,6 +68,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         void bindData(final Book item) {
             Glide.with(context).load(item.getFormats().getImage()).into(iconImage);
             title.setText(item.getTitle());
+            author.setText(item.getAuthors().get(0).getName());
         }
 
         @Override

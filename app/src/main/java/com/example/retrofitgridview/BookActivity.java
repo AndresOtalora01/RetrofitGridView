@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -28,21 +29,18 @@ public class BookActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         Intent intent = getIntent();
+
 
         if (intent.getExtras() != null) {
             book = (Book) intent.getSerializableExtra("data");
+            setTitle(book.getTitle());
             String message = "Título: " + book.getTitle();
             Log.d("Buscaminas", message);
         }
 
-        Button btnReturn = (Button) findViewById(R.id.returnButton);
-        btnReturn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpContent);
 
@@ -52,7 +50,7 @@ public class BookActivity extends AppCompatActivity {
             @Override
             public void onLoaded(String result) {
                 Log.d("cacaInfo", String.valueOf(result.length()));
-                adapterViewPager = new PageFragmentAdapter(getSupportFragmentManager(), 600, result);
+                adapterViewPager = new PageFragmentAdapter(getSupportFragmentManager(), 600, result, book.getFormats().getImage());
                 vpPager.setAdapter(adapterViewPager);
             }
 
@@ -82,6 +80,25 @@ public class BookActivity extends AppCompatActivity {
             }
         });
 
+        vpPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0)
+                    sbTextSize.setVisibility(View.GONE);
+                else
+                    sbTextSize.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
 
@@ -144,6 +161,12 @@ public class BookActivity extends AppCompatActivity {
 
     public void returnMenu(View view) {
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
 }
