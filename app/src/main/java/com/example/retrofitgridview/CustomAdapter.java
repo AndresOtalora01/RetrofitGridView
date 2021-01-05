@@ -15,16 +15,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private OnBookListener mOnBookListener;
-    private List<Book> books;
+    private List<Book> books = new ArrayList<>();
     private Context context;
     private LayoutInflater mInflater;
 
-    public CustomAdapter(List<Book> books, Context context, OnBookListener mOnBookListener) {
-        this.books = books;
+    public CustomAdapter(Context context, OnBookListener mOnBookListener) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
         this.mOnBookListener = mOnBookListener;
@@ -47,7 +47,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     }
 
     public void setItems(List<Book> items) {
-        books = items;
+        books.clear();
+        books.addAll(items);
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -68,7 +70,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         void bindData(final Book item) {
             Glide.with(context).load(item.getFormats().getImage()).into(iconImage);
             title.setText(item.getTitle());
-            author.setText(item.getAuthors().get(0).getName());
+            if(item.getAuthors().size() > 0) {
+                author.setText(item.getAuthors().get(0).getName());
+            } else {
+                author.setText("Unknown");
+            }
+
         }
 
         @Override
