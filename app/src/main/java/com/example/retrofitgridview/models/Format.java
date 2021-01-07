@@ -1,4 +1,4 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
@@ -28,7 +28,27 @@ public class Format implements Serializable {
     @SerializedName("application/zip")
     private String zip;
 
+    @SerializedName("text/plain; charset=us-ascii")
+    private String textPlainAscii;
 
+    @SerializedName("text/plain; charset=iso-8859-1")
+    private String textPlainIso;
+
+    public String getTextPlainAscii() {
+        return textPlainAscii;
+    }
+
+    public void setTextPlainAscii(String textPlainAscii) {
+        this.textPlainAscii = textPlainAscii;
+    }
+
+    public String getTextPlainIso() {
+        return textPlainIso;
+    }
+
+    public void setTextPlainIso(String textPlainIso) {
+        this.textPlainIso = textPlainIso;
+    }
 
     public String getEbook() {
         return ebook;
@@ -86,18 +106,18 @@ public class Format implements Serializable {
         this.zip = zip;
     }
 
-
-
     @Override
     public String toString() {
         return "Format{" +
                 "ebook='" + ebook + '\'' +
                 ", textPlain='" + textPlain + '\'' +
                 ", textHtml='" + textHtml + '\'' +
-                ", textXtml='" + textXml + '\'' +
+                ", textXml='" + textXml + '\'' +
                 ", epubZip='" + epubZip + '\'' +
-                ", zip='" + zip + '\'' +
                 ", image='" + image + '\'' +
+                ", zip='" + zip + '\'' +
+                ", textPlainAscii='" + textPlainAscii + '\'' +
+                ", textPlainIso='" + textPlainIso + '\'' +
                 '}';
     }
 }

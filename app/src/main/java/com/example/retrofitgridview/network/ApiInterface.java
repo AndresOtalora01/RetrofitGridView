@@ -1,6 +1,6 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.network;
 
-import java.util.List;
+import com.example.retrofitgridview.models.BooksResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

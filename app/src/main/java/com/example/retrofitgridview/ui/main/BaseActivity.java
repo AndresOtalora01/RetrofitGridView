@@ -1,13 +1,11 @@
-package com.example.retrofitgridview;
-
-import android.view.View;
-import android.widget.ProgressBar;
+package com.example.retrofitgridview.ui.main;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.retrofitgridview.ui.book.ProgressDialog;
+
 public class BaseActivity extends AppCompatActivity {
     private ProgressDialog progressDialog = ProgressDialog.init(this);
-
 
     protected void showProgressDialog() {
         progressDialog.show();

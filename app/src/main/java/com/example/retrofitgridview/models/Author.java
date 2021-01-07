@@ -1,4 +1,4 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.models;
 
 import java.io.Serializable;
 

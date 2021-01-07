@@ -1,8 +1,7 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Book implements Serializable {
 

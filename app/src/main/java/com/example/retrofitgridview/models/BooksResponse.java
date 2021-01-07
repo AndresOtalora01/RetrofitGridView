@@ -1,9 +1,10 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.models;
 
+
+import com.example.retrofitgridview.models.Book;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class BooksResponse implements Serializable {
     private int count;

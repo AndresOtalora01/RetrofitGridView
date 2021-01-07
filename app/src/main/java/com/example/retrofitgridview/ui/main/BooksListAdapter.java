@@ -1,43 +1,41 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.ui.main;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
+import com.example.retrofitgridview.models.Book;
+import com.example.retrofitgridview.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
+public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.ViewHolder> {
     private OnBookListener mOnBookListener;
     private List<Book> books = new ArrayList<>();
     private Context context;
     private LayoutInflater mInflater;
 
-    public CustomAdapter(Context context, OnBookListener mOnBookListener) {
+    public BooksListAdapter(Context context, OnBookListener mOnBookListener) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
         this.mOnBookListener = mOnBookListener;
     }
 
     @Override
-    public CustomAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BooksListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.book_item, null);
-        return new CustomAdapter.ViewHolder(view, mOnBookListener);
+        return new BooksListAdapter.ViewHolder(view, mOnBookListener);
     }
 
     @Override
-    public void onBindViewHolder(CustomAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(BooksListAdapter.ViewHolder holder, int position) {
         holder.bindData(books.get(position));
     }
 

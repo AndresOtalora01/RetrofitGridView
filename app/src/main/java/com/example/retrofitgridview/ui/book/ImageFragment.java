@@ -1,7 +1,6 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.ui.book;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.widget.ImageView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.retrofitgridview.R;
 
 public class ImageFragment extends Fragment {
     private String imageUrl;

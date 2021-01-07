@@ -1,4 +1,4 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.network;
 
 public interface LoaderListener {
     void onLoaded(String result);

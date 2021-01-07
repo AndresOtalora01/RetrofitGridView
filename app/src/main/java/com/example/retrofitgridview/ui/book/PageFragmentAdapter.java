@@ -1,8 +1,6 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.ui.book;
 
-import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.SeekBar;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;

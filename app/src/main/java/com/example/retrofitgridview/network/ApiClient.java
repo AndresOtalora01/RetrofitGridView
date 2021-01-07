@@ -1,4 +1,6 @@
-package com.example.retrofitgridview;
+package com.example.retrofitgridview.network;
+
+import com.example.retrofitgridview.network.ApiInterface;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
