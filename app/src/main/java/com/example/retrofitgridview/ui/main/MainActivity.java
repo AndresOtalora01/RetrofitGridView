@@ -16,6 +16,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.retrofitgridview.models.Format;
 import com.example.retrofitgridview.network.ApiClient;
 import com.example.retrofitgridview.models.Book;
 import com.example.retrofitgridview.models.BooksResponse;
@@ -24,6 +25,7 @@ import com.example.retrofitgridview.ui.book.BookActivity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +35,6 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
 
     private int actualPage = 1;
     private RecyclerView recyclerView;
-    private BooksResponse booksResponseList;
     private BooksListAdapter booksListAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private ImageView backArrow;
@@ -47,7 +48,10 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         recyclerView = findViewById(R.id.recyclerView);
         tvBooksPage = findViewById(R.id.tvBooksPage);
         getAllBooks();
-
+//        long startTime = System.nanoTime();
+//        testSpeed();
+//        long endTime = System.nanoTime();
+//        Log.d("tiempo", endTime - startTime + "");
     }
 
     public void getAllBooks() {
@@ -56,34 +60,22 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         } else {
             backArrow.setVisibility(View.VISIBLE);
         }
-
         showProgressDialog();
         Call<BooksResponse> booksResponse = ApiClient.getInterface().getAllBooks(actualPage);
         booksResponse.enqueue(new Callback<BooksResponse>() {
             @Override
             public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
                 hideProgressDialog();
-                tvBooksPage.setText(actualPage+"");
+                tvBooksPage.setText(actualPage + "");
                 if (response.code() == 200) {
                     Log.d("Buscaminas", response.body().toString());
-                    booksResponseList = response.body();
-                    booksResponseList = deleteZipFiles(booksResponseList);
-                    if (booksListAdapter == null) {
-                        booksListAdapter = new BooksListAdapter(MainActivity.this, MainActivity.this::onBookClick);
-                        layoutManager = new LinearLayoutManager(getApplicationContext());
-                        recyclerView.setLayoutManager(layoutManager);
-                        recyclerView.setAdapter(booksListAdapter);
-                    }
-                    booksListAdapter.setItems(booksResponseList.getResults());
-                    layoutManager.scrollToPosition(0);
+                    adapterManagement(response.body());
                 } else {
                     String message = "ERROR. Try again later";
                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                     Log.d("Buscaminas", "no funciona");
                 }
-
             }
-
             @Override
             public void onFailure(Call<BooksResponse> call, Throwable t) {
                 hideProgressDialog();
@@ -94,9 +86,30 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
 
     }
 
+    public void adapterManagement(BooksResponse booksResponse) {
+        booksResponse = deleteZipFiles(booksResponse);
+        if (booksListAdapter == null) {
+            booksListAdapter = new BooksListAdapter(MainActivity.this, MainActivity.this::onBookClick);
+            layoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(booksListAdapter);
+        }
+        booksListAdapter.setItems(booksResponse.getResults());
+        layoutManager.scrollToPosition(0);
+    }
+
     @Override
     public void onBookClick(int position) {
-        startActivity(new Intent(this, BookActivity.class).putExtra("data", booksResponseList.getResults().get(position)));
+        Book book = (Book) booksListAdapter.getItem(position);
+        startActivity(new Intent(this, BookActivity.class).putExtra("data", book));
+    }
+
+    public void testSpeed() {
+        Book book = new Book();
+        Format format = new Format();
+        format.setTextPlain("https://www.gutenberg.org/files/46/46-0.txt");
+        book.setFormats(format);
+        startActivity(new Intent(this, BookActivity.class).putExtra("data", book));
     }
 
     public void onNextClick(View view) {
@@ -116,7 +129,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         for (Iterator<Book> iterator = books.iterator(); iterator.hasNext(); ) {
             Book book = iterator.next();
             if ((book.getFormats().getTextPlain() != null && !book.getFormats().getTextPlain().endsWith(".txt"))
-                    ||  (book.getFormats().getTextPlainIso() != null && !book.getFormats().getTextPlainIso().endsWith(".txt"))
+                    || (book.getFormats().getTextPlainIso() != null && !book.getFormats().getTextPlainIso().endsWith(".txt"))
                     && (book.getFormats().getTextPlainAscii() != null && !book.getFormats().getTextPlainAscii().endsWith(".txt"))) {
                 iterator.remove();
             }
@@ -133,19 +146,41 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         MenuItem searchItem = menu.findItem(R.id.actionSearch);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                showProgressDialog();
+                Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBook(query);
+                booksResponse.enqueue(new Callback<BooksResponse>() {
+                    @Override
+                    public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
+                        hideProgressDialog();
+                        if (response.code() == 200) {
+                            Log.d("Buscaminas", response.body().toString());
+                            adapterManagement(response.body());
+                        } else {
+                            String message = "ERROR. Try again later";
+                            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                            Log.d("Buscaminas", "no funciona");
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<BooksResponse> call, Throwable t) {
+                        hideProgressDialog();
+                        String message = t.getLocalizedMessage();
+                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                    }
+                });
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                booksListAdapter.getFilter().filter(newText);
+                // booksListAdapter.getFilter().filter(newText);
                 return false;
             }
         });
-
         return true;
     }
 }

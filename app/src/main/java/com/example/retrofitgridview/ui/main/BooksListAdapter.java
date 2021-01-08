@@ -1,9 +1,11 @@
 package com.example.retrofitgridview.ui.main;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -47,6 +49,8 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
         return books.size();
     }
 
+
+
     public void setItems(List<Book> items) {
         books.clear();
         books.addAll(items);
@@ -84,8 +88,11 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
         @Override
         public void onClick(View v) {
             onBookListener.onBookClick(getAdapterPosition());
+            Log.d("posicion", getAdapterPosition()+"");
         }
     }
+
+
 
     public interface OnBookListener {
         void onBookClick(int position);
@@ -125,5 +132,10 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
             notifyDataSetChanged();
         }
     };
+
+
+    public Book getItem(int position) {
+        return books.get(position);
+    }
 
 }

@@ -41,7 +41,7 @@ public class PageFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         Log.d("getItem", position + "");
         if(position == 0) {
-            imageFragment = ImageFragment.newInstance(imageUrl);
+            imageFragment = ImageFragment.newInstance(imageUrl, parts.size());
             return imageFragment;
         }
         PageFragment pageFragment = PageFragment.newInstance(position, parts.get(position), txtSize);

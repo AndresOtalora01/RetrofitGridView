@@ -1,5 +1,6 @@
 package com.example.retrofitgridview.network;
 
+import com.example.retrofitgridview.models.Book;
 import com.example.retrofitgridview.models.BooksResponse;
 
 import retrofit2.Call;
@@ -16,6 +17,9 @@ public interface ApiInterface {
 
     @GET
     Call<BooksResponse> getNextBooks(@Url String url);
+
+    @GET("books/")
+    Call<BooksResponse> getSpecificBook (@Query(value = "search") String query );
 
 
 

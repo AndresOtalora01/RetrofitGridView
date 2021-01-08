@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 public class BookActivity extends BaseActivity {
 
@@ -35,6 +36,7 @@ public class BookActivity extends BaseActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        long startTime = new Date().getTime();
         Intent intent = getIntent();
         showProgressDialog();
 
@@ -54,7 +56,6 @@ public class BookActivity extends BaseActivity {
         } else if (book.getFormats().getTextPlainIso() != null && book.getFormats().getTextPlainIso().endsWith(".txt") ) {
             content = book.getFormats().getTextPlainIso();
         }
-
         new DownloadFileFromURL(this, content, new LoaderListener() {
             @Override
             public void onLoaded(String result) {
@@ -62,15 +63,14 @@ public class BookActivity extends BaseActivity {
                 adapterViewPager = new PageFragmentAdapter(getSupportFragmentManager(), 600, result, book.getFormats().getImage());
                 vpPager.setAdapter(adapterViewPager);
             }
-
             @Override
             public void onFailure(String error) {
                 hideProgressDialog();
                 Toast.makeText(getApplicationContext(), "ERROR   " + error, Toast.LENGTH_LONG).show();
             }
         }).execute();
-
-
+        long endTime = new Date().getTime();
+        Log.d("tiempo2",  endTime - startTime +"");
         sbTextSize = (SeekBar) findViewById(R.id.sbTextSize);
         sbTextSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -90,7 +90,6 @@ public class BookActivity extends BaseActivity {
 
             }
         });
-
         vpPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -104,15 +103,13 @@ public class BookActivity extends BaseActivity {
                 else
                     sbTextSize.setVisibility(View.VISIBLE);
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {
 
             }
         });
+
     }
-
-
     public static class DownloadFileFromURL extends AsyncTask<String, Integer, String> {
         private LoaderListener listener;
         private BaseActivity baseActivity;
@@ -168,7 +165,6 @@ public class BookActivity extends BaseActivity {
             }
             return result;
         }
-
         /**
          * After completing background task Dismiss the progress dialog
          **/
@@ -182,7 +178,6 @@ public class BookActivity extends BaseActivity {
             baseActivity.setDialogProgress(progress[0]);
         }
     }
-
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
