@@ -1,4 +1,4 @@
-package com.example.retrofitgridview.fragments;
+package com.example.retrofitgridview.ui.book;
 
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;

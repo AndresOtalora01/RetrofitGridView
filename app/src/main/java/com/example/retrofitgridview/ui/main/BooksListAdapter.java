@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,11 +18,12 @@ import com.example.retrofitgridview.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.ViewHolder> {
+public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.ViewHolder> implements Filterable {
     private OnBookListener mOnBookListener;
     private List<Book> books = new ArrayList<>();
     private Context context;
     private LayoutInflater mInflater;
+    private List<Book> fullBooksList;
 
     public BooksListAdapter(Context context, OnBookListener mOnBookListener) {
         this.mInflater = LayoutInflater.from(context);
@@ -47,7 +50,9 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
     public void setItems(List<Book> items) {
         books.clear();
         books.addAll(items);
+        fullBooksList = new ArrayList<>(books);
         notifyDataSetChanged();
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -68,7 +73,7 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
         void bindData(final Book item) {
             Glide.with(context).load(item.getFormats().getImage()).into(iconImage);
             title.setText(item.getTitle());
-            if(item.getAuthors().size() > 0) {
+            if (item.getAuthors().size() > 0) {
                 author.setText(item.getAuthors().get(0).getName());
             } else {
                 author.setText("Unknown");
@@ -85,5 +90,40 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
     public interface OnBookListener {
         void onBookClick(int position);
     }
+
+
+    @Override
+    public Filter getFilter() {
+        return bookFilter;
+    }
+
+    private Filter bookFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) { // this method will be automatically executed on the background thread.
+            List<Book> filteredBooks = new ArrayList<>();
+
+            if (constraint == null || constraint.length() == 0) {
+                filteredBooks.addAll(fullBooksList);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (Book book : fullBooksList) {
+                    if (book.getTitle().toLowerCase().contains(filterPattern)) {
+                        filteredBooks.add(book);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredBooks;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            books.clear();
+            books.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
 
 }
