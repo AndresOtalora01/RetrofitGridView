@@ -3,9 +3,14 @@ package com.example.retrofitgridview.ui.main;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActivityManager;
+import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,6 +44,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
     private RecyclerView.LayoutManager layoutManager;
     private ImageView backArrow;
     private TextView tvBooksPage;
+//    private static LruCache<Integer, String> mMemoryCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +53,23 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         backArrow = findViewById(R.id.ivPrevious);
         recyclerView = findViewById(R.id.recyclerView);
         tvBooksPage = findViewById(R.id.tvBooksPage);
+        Log.d("ruta", Environment.getExternalStorageDirectory().toString());
         getAllBooks();
-//        long startTime = System.nanoTime();
-//        testSpeed();
-//        long endTime = System.nanoTime();
-//        Log.d("tiempo", endTime - startTime + "");
+
+//        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
+//        final int cacheSize = maxMemorySize / 10;
+//        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+//        int availMemInBytes = am.getMemoryClass() * 1024 * 1024;
+//        mMemoryCache = new LruCache<Integer, String>(availMemInBytes / 8) {
+//
+//            @Override
+//            protected int sizeOf(Integer key, String value) {
+//                byte[] size;
+//                size = value.getBytes();
+//                return size.length / 8;
+//            }
+//        };
+
     }
 
     public void getAllBooks() {
@@ -76,6 +94,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
                     Log.d("Buscaminas", "no funciona");
                 }
             }
+
             @Override
             public void onFailure(Call<BooksResponse> call, Throwable t) {
                 hideProgressDialog();
@@ -101,14 +120,6 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
     @Override
     public void onBookClick(int position) {
         Book book = (Book) booksListAdapter.getItem(position);
-        startActivity(new Intent(this, BookActivity.class).putExtra("data", book));
-    }
-
-    public void testSpeed() {
-        Book book = new Book();
-        Format format = new Format();
-        format.setTextPlain("https://www.gutenberg.org/files/46/46-0.txt");
-        book.setFormats(format);
         startActivity(new Intent(this, BookActivity.class).putExtra("data", book));
     }
 
@@ -165,6 +176,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
                             Log.d("Buscaminas", "no funciona");
                         }
                     }
+
                     @Override
                     public void onFailure(Call<BooksResponse> call, Throwable t) {
                         hideProgressDialog();
@@ -183,4 +195,15 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         });
         return true;
     }
+
+//    public static String getContentFromMemoryCache(Integer key) {
+//        return mMemoryCache.get(key);
+//    }
+//
+//    public static void setContentToMemoryCache(Integer key, String content) {
+//        if(getContentFromMemoryCache(key) == null) {
+//            mMemoryCache.put(key,content);
+//        }
+//    }
+
 }

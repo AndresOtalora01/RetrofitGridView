@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.retrofitgridview.models.Book;
 import com.example.retrofitgridview.R;
+import com.example.retrofitgridview.ui.book.BooksManagement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,20 +57,21 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
         books.addAll(items);
         fullBooksList = new ArrayList<>(books);
         notifyDataSetChanged();
-
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView iconImage;
         TextView title;
         TextView author;
+        ImageView iconDownloaded;
         OnBookListener onBookListener;
-
+        List<Integer> downloadedBooksList;
         ViewHolder(View itemView, OnBookListener onBookListener) {
             super(itemView);
             iconImage = (ImageView) itemView.findViewById(R.id.iconImageView);
             title = itemView.findViewById(R.id.tvTitle);
             author = itemView.findViewById(R.id.tvAuthor);
+            iconDownloaded = itemView.findViewById(R.id.ivDownloaded);
             this.onBookListener = onBookListener;
             itemView.setOnClickListener(this);
         }

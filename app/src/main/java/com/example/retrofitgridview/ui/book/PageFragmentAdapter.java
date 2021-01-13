@@ -20,12 +20,20 @@ public class PageFragmentAdapter extends FragmentPagerAdapter {
     private String imageUrl;
 
 
+
+
+
+
     // private Long totalTime = 0L;
     public PageFragmentAdapter(FragmentManager fragmentManager, int charMax, String content,String imageUrl) {
         super(fragmentManager);
         this.charMax = charMax;
         this.content = content;
+        long startTime = System.currentTimeMillis();
         this.parts = getParts(content, charMax);
+        long endTime = System.currentTimeMillis();
+        long duration = (endTime - startTime);
+        Log.d("paginas", duration+"");
         this.imageUrl = imageUrl;
     }
 
