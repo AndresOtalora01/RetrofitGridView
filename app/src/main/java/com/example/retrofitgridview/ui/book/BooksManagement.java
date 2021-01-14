@@ -71,16 +71,19 @@ public class BooksManagement {
 
 
     public List<Integer> getSavedBooks() {
-        String path = context.getFilesDir() + "/books/";
-        String id;
-        File bookPath = new File(path);
-        String [] names = bookPath.list();
-        for (String f : names) {
-            if(f.contains(".txt")) {
-                id = f.substring(0, f.lastIndexOf('.'));
-                booksIds.add(Integer.parseInt(id));
+            String path = context.getFilesDir() + "/books/";
+            String id;
+            File bookPath = new File(path);
+            if (bookPath.exists()) {
+                String[] names = bookPath.list();
+            for (String f : names) {
+                if (f.contains(".txt")) {
+                    id = f.substring(0, f.lastIndexOf('.'));
+                    booksIds.add(Integer.parseInt(id));
+                }
             }
         }
+
         return booksIds;
     }
     public static BooksManagement getBooksManagement() {

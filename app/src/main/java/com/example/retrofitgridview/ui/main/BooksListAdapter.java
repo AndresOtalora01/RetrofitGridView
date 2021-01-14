@@ -51,7 +51,6 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
     }
 
 
-
     public void setItems(List<Book> items) {
         books.clear();
         books.addAll(items);
@@ -66,6 +65,7 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
         ImageView iconDownloaded;
         OnBookListener onBookListener;
         List<Integer> downloadedBooksList;
+
         ViewHolder(View itemView, OnBookListener onBookListener) {
             super(itemView);
             iconImage = (ImageView) itemView.findViewById(R.id.iconImageView);
@@ -77,23 +77,29 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
         }
 
         void bindData(final Book item) {
+            downloadedBooksList = new ArrayList<>();
+            downloadedBooksList = BooksManagement.getBooksManagement().getSavedBooks();
+
+            if (downloadedBooksList.contains(item.getId())) {
+                iconDownloaded.setVisibility(View.VISIBLE);
+            } else {
+                iconDownloaded.setVisibility(View.GONE);
+            }
             Glide.with(context).load(item.getFormats().getImage()).into(iconImage);
             title.setText(item.getTitle());
             if (item.getAuthors().size() > 0) {
                 author.setText(item.getAuthors().get(0).getName());
             } else {
-                author.setText("Unknown");
+                author.setText(R.string.unknown_author);
             }
-
         }
 
         @Override
         public void onClick(View v) {
             onBookListener.onBookClick(getAdapterPosition());
-            Log.d("posicion", getAdapterPosition()+"");
+            Log.d("posicion", getAdapterPosition() + "");
         }
     }
-
 
 
     public interface OnBookListener {
@@ -139,5 +145,7 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
     public Book getItem(int position) {
         return books.get(position);
     }
+
+
 
 }

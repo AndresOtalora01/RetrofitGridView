@@ -9,4 +9,6 @@
     <string name="next">next</string>
     <string name="previous">previous</string>
     <string name="pages">páginas</string>
+    <string name="unknown_author">Unknown</string>
+    <string name="downloaded_books">Libros descargados</string>
 </resources>

@@ -57,14 +57,7 @@ public class BookActivity extends BaseActivity {
             setTitle(book.getTitle());
         }
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpContent);
-        String content = "";
-        if (book.getFormats().getTextPlain() != null && book.getFormats().getTextPlain().endsWith(".txt")) {
-            content = book.getFormats().getTextPlain();
-        } else if (book.getFormats().getTextPlainAscii() != null && book.getFormats().getTextPlainAscii().endsWith(".txt")) {
-            content = book.getFormats().getTextPlainAscii();
-        } else if (book.getFormats().getTextPlainIso() != null && book.getFormats().getTextPlainIso().endsWith(".txt")) {
-            content = book.getFormats().getTextPlainIso();
-        }
+        String content = verifyContent(book);
         startTime = System.currentTimeMillis();
         String fileName = book.getId() + ".txt";
         String path = getApplicationContext().getFilesDir() + "/books/";
@@ -91,6 +84,7 @@ public class BookActivity extends BaseActivity {
                     booksManagement.saveBookToMemory(fileName, result);
                     adapterViewPager = new PageFragmentAdapter(getSupportFragmentManager(), 600, result, book.getFormats().getImage());
                     vpPager.setAdapter(adapterViewPager);
+
                 }
 
                 @Override
@@ -225,5 +219,16 @@ public class BookActivity extends BaseActivity {
         return true;
     }
 
+    public String verifyContent(Book book) {
+        String content = "";
+        if (book.getFormats().getTextPlain() != null && book.getFormats().getTextPlain().endsWith(".txt")) {
+            content = book.getFormats().getTextPlain();
+        } else if (book.getFormats().getTextPlainAscii() != null && book.getFormats().getTextPlainAscii().endsWith(".txt")) {
+            content = book.getFormats().getTextPlainAscii();
+        } else if (book.getFormats().getTextPlainIso() != null && book.getFormats().getTextPlainIso().endsWith(".txt")) {
+            content = book.getFormats().getTextPlainIso();
+        }
+        return content;
+    }
 
 }

@@ -206,4 +206,12 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
 //        }
 //    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //update whatever your list
+        if (booksListAdapter != null)
+            booksListAdapter.notifyDataSetChanged();
+    }
+
 }
