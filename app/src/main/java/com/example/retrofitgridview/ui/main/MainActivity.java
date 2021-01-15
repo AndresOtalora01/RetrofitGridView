@@ -30,6 +30,7 @@ import com.example.retrofitgridview.models.Book;
 import com.example.retrofitgridview.models.BooksResponse;
 import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.ui.book.BookActivity;
+import com.example.retrofitgridview.ui.book.DownloadedBooksFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
+    private ArrayList<Book> listado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +63,6 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         tvBooksPage = findViewById(R.id.tvBooksPage);
         setNavigationDrawer();
         getAllBooks();
-    }
-
-    public void getDownloadedBooks() {
-        if (actualPage == 1) {
-            backArrow.setVisibility(View.GONE);
-        } else {
-            backArrow.setVisibility(View.VISIBLE);
-        }
-        showProgressDialog();
-
     }
 
     public void getAllBooks() {
@@ -88,6 +80,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
                 tvBooksPage.setText(actualPage + "");
                 if (response.code() == 200) {
                     Log.d("Buscaminas", response.body().toString());
+                    listado  = response.body().getResults();
                     adapterManagement(response.body());
                 } else {
                     String message = "ERROR. Try again later";
@@ -109,7 +102,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
     public void adapterManagement(BooksResponse booksResponse) {
         booksResponse = deleteZipFiles(booksResponse);
         if (booksListAdapter == null) {
-            booksListAdapter = new BooksListAdapter(MainActivity.this, MainActivity.this::onBookClick);
+            booksListAdapter = new BooksListAdapter(getApplicationContext(), MainActivity.this::onBookClick);
             layoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(booksListAdapter);
@@ -226,15 +219,15 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
 
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            DownloadedBooksFragment downloadedBooksFragment =new DownloadedBooksFragment(listado);
             switch (id) {
                 case R.id.nav_downloaded_books:
-                    Toast.makeText(MainActivity.this, "My Account", Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.activity_main, downloadedBooksFragment).commit();
                     break;
                 default:
                     return true;
             }
             return true;
-
         });
     }
 

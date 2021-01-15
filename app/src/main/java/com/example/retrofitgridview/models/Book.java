@@ -16,6 +16,11 @@ public class Book implements Serializable {
     private Format formats;
     private int download_count;
 
+    public Book(int id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     public int getId() {
         return id;
     }
