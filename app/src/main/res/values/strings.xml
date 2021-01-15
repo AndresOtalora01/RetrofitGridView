@@ -11,4 +11,8 @@
     <string name="pages">páginas</string>
     <string name="unknown_author">Unknown</string>
     <string name="downloaded_books">Libros descargados</string>
+    <string name="Open">Open navigation drawer</string>
+    <string name="Close">Close navigation drawer</string>
+    <string name="search_menu">Search</string>
+    <string name="search">Buscar...</string>
 </resources>

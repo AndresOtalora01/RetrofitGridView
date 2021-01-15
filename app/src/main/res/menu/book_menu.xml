@@ -2,15 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/actionSearch"
-        android:icon="@drawable/ic_search"
-        android:title="Search"
-        app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="ifRoom"/>
 
-
-
+    <group>
+        <item
+            android:id="@+id/nav_downloaded_books"
+            android:icon="@drawable/ic_baseline_file_download_off_24"
+            android:title="@string/downloaded_books"
+            app:showAsAction="ifRoom"/>
+    </group>
 
 
 </menu>

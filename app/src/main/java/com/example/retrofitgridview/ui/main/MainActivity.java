@@ -1,5 +1,8 @@
 package com.example.retrofitgridview.ui.main;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +30,7 @@ import com.example.retrofitgridview.models.Book;
 import com.example.retrofitgridview.models.BooksResponse;
 import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.ui.book.BookActivity;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,7 +48,9 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
     private RecyclerView.LayoutManager layoutManager;
     private ImageView backArrow;
     private TextView tvBooksPage;
-//    private static LruCache<Integer, String> mMemoryCache;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,22 +59,17 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         backArrow = findViewById(R.id.ivPrevious);
         recyclerView = findViewById(R.id.recyclerView);
         tvBooksPage = findViewById(R.id.tvBooksPage);
-        Log.d("ruta", Environment.getExternalStorageDirectory().toString());
+        setNavigationDrawer();
         getAllBooks();
+    }
 
-//        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
-//        final int cacheSize = maxMemorySize / 10;
-//        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-//        int availMemInBytes = am.getMemoryClass() * 1024 * 1024;
-//        mMemoryCache = new LruCache<Integer, String>(availMemInBytes / 8) {
-//
-//            @Override
-//            protected int sizeOf(Integer key, String value) {
-//                byte[] size;
-//                size = value.getBytes();
-//                return size.length / 8;
-//            }
-//        };
+    public void getDownloadedBooks() {
+        if (actualPage == 1) {
+            backArrow.setVisibility(View.GONE);
+        } else {
+            backArrow.setVisibility(View.VISIBLE);
+        }
+        showProgressDialog();
 
     }
 
@@ -152,11 +153,12 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.book_menu, menu);
+        menuInflater.inflate(R.menu.search_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.actionSearch);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setQueryHint(getResources().getString(R.string.search));
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -196,15 +198,6 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         return true;
     }
 
-//    public static String getContentFromMemoryCache(Integer key) {
-//        return mMemoryCache.get(key);
-//    }
-//
-//    public static void setContentToMemoryCache(Integer key, String content) {
-//        if(getContentFromMemoryCache(key) == null) {
-//            mMemoryCache.put(key,content);
-//        }
-//    }
 
     @Override
     public void onResume() {
@@ -212,6 +205,37 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         //update whatever your list
         if (booksListAdapter != null)
             booksListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (actionBarDrawerToggle.onOptionsItemSelected(item))
+            return true;
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void setNavigationDrawer() {
+        drawerLayout = findViewById(R.id.activity_main);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.Open, R.string.Close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        navigationView = findViewById(R.id.navigationView);
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            switch (id) {
+                case R.id.nav_downloaded_books:
+                    Toast.makeText(MainActivity.this, "My Account", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    return true;
+            }
+            return true;
+
+        });
     }
 
 }
