@@ -22,7 +22,6 @@ import java.util.List;
 
 public class BooksManagement {
     private Context context;
-    private List<Integer> booksIds = new ArrayList<>();
     private static BooksManagement booksManagement;
 
 
@@ -30,7 +29,6 @@ public class BooksManagement {
         if (booksManagement == null) {
             booksManagement = new BooksManagement();
             booksManagement.context = context;
-            booksManagement.booksIds = new ArrayList<>();
         }
         return booksManagement;
     }
@@ -69,25 +67,23 @@ public class BooksManagement {
     }
 
 
-
-    public List<Integer> getSavedBooks() {
-            String path = context.getFilesDir() + "/books/";
-            String id;
-            File bookPath = new File(path);
-            if (bookPath.exists()) {
-                String[] names = bookPath.list();
-            for (String f : names) {
-                if (f.contains(".txt")) {
-                    id = f.substring(0, f.lastIndexOf('.'));
-                    booksIds.add(Integer.parseInt(id));
-                }
+    public String [] getSavedBooks() {
+        String path = context.getFilesDir() + "/books/";
+        String id;
+        String[] names = new String[0];
+        File bookPath = new File(path);
+        if (bookPath.exists()) {
+             names = bookPath.list();
+            for (int i = 0; i < names.length; i++) {
+                    names[i] = names[i].substring(0, names[i].lastIndexOf('.'));
             }
         }
 
-        return booksIds;
+        return names;
     }
+
     public static BooksManagement getBooksManagement() {
-        if(booksManagement == null) {
+        if (booksManagement == null) {
             booksManagement = new BooksManagement();
         }
         return booksManagement;

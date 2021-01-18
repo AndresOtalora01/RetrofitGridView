@@ -64,7 +64,7 @@ public class BookActivity extends BaseActivity {
         File file = new File(path, fileName);
         if (file.exists()) {
             hideProgressDialog();
-            List<Integer> list = booksManagement.getSavedBooks();
+            String [] list = booksManagement.getSavedBooks();
             String result;
             result = booksManagement.loadBookFromMemory(fileName);
             adapterViewPager = new PageFragmentAdapter(getSupportFragmentManager(), 600, result, book.getFormats().getImage());

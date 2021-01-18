@@ -9,11 +9,11 @@ public class BaseActivity extends AppCompatActivity {
     private ProgressDialog progressDialog = ProgressDialog.init(this);
     protected BooksManagement booksManagement = BooksManagement.init(this);
 
-    protected void showProgressDialog() {
+    public void showProgressDialog() {
         progressDialog.show();
     }
 
-    protected void hideProgressDialog() {
+    public void hideProgressDialog() {
         if (progressDialog != null)
             progressDialog.dismiss();
     }

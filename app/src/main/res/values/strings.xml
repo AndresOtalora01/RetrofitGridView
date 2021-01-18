@@ -15,4 +15,5 @@
     <string name="Close">Close navigation drawer</string>
     <string name="search_menu">Search</string>
     <string name="search">Buscar...</string>
+    <string name="all_books">Todos los libros</string>
 </resources>

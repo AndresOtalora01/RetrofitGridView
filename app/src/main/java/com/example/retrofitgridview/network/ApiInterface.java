@@ -3,6 +3,8 @@ package com.example.retrofitgridview.network;
 import com.example.retrofitgridview.models.Book;
 import com.example.retrofitgridview.models.BooksResponse;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -19,7 +21,7 @@ public interface ApiInterface {
     Call<BooksResponse> getNextBooks(@Url String url);
 
     @GET("books/")
-    Call<BooksResponse> getSpecificBook (@Query(value = "search") String query );
+    Call<BooksResponse> getSpecificBook (@Query("ids") String query);
 
 
 

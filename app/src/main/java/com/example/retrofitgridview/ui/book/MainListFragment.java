@@ -1,21 +1,26 @@
 package com.example.retrofitgridview.ui.book;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.models.Book;
@@ -24,16 +29,15 @@ import com.example.retrofitgridview.network.ApiClient;
 import com.example.retrofitgridview.ui.main.BaseActivity;
 import com.example.retrofitgridview.ui.main.BooksListAdapter;
 import com.example.retrofitgridview.ui.main.MainActivity;
+import com.fasterxml.jackson.databind.ser.Serializers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-public class DownloadedBooksFragment extends Fragment implements BooksListAdapter.OnBookListener {
+public class MainListFragment extends Fragment implements BooksListAdapter.OnBookListener {
 
     private ArrayList<Book> booksList;
     private ImageView backArrow;
@@ -44,15 +48,15 @@ public class DownloadedBooksFragment extends Fragment implements BooksListAdapte
     private BooksListAdapter booksListAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    public DownloadedBooksFragment() {
+    public MainListFragment() {
         booksList = new ArrayList<>();
     }
+
 
     public static DownloadedBooksFragment newInstance(String param1, String param2) {
         DownloadedBooksFragment fragment = new DownloadedBooksFragment();
         return fragment;
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -62,20 +66,24 @@ public class DownloadedBooksFragment extends Fragment implements BooksListAdapte
             actualPage--;
             getAllBooks();
         });
+        nextArrow.setOnClickListener(v -> {
+            actualPage++;
+            getAllBooks();
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_downloaded_books, container, false);
+        View view = inflater.inflate(R.layout.main_list, container, false);
 
         backArrow = view.findViewById(R.id.ivPrevious);
         nextArrow = view.findViewById(R.id.ivNext);
         tvBooksPage = view.findViewById(R.id.tvBooksPage);
         layoutManager = new LinearLayoutManager(getContext());
-        recyclerView = view.findViewById(R.id.recyclerView2);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
-        booksListAdapter = new BooksListAdapter(getContext(), this::onBookClick);
+        BooksListAdapter booksListAdapter = new BooksListAdapter(getContext(), this::onBookClick);
 
         recyclerView.setAdapter(booksListAdapter);
         booksListAdapter.setItems(booksList);
@@ -89,32 +97,25 @@ public class DownloadedBooksFragment extends Fragment implements BooksListAdapte
         startActivity(new Intent(getActivity(), BookActivity.class).putExtra("data", book));
     }
 
+
     public void getAllBooks() {
-        boolean nextPage = true;
         if (actualPage == 1) {
             backArrow.setVisibility(View.GONE);
         } else {
             backArrow.setVisibility(View.VISIBLE);
         }
+
         ((BaseActivity) getActivity()).showProgressDialog();
-        String[] savedBooks = BooksManagement.getBooksManagement().getSavedBooks();
-        StringBuilder queryValues = new StringBuilder();
-        for (int i = 0; i < savedBooks.length; i++) {
-            if (i != savedBooks.length - 1)
-                queryValues = queryValues.append(savedBooks[i] + ",");
-            else queryValues.append(savedBooks[i]);
-        }
-        Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBook(queryValues.toString());
+        Call<BooksResponse> booksResponse = ApiClient.getInterface().getAllBooks(actualPage);
         booksResponse.enqueue(new Callback<BooksResponse>() {
             @Override
             public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
+                ((BaseActivity) getActivity()).hideProgressDialog();
                 tvBooksPage.setText(actualPage + "");
                 if (response.code() == 200) {
-                    ((BaseActivity) getActivity()).hideProgressDialog();
                     Log.d("Buscaminas", response.body().toString());
                     booksList = response.body().getResults();
                     adapterManagement(response.body());
-                    actualPage++;
                 } else {
                     String message = "ERROR. Try again later";
                     Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
@@ -129,6 +130,14 @@ public class DownloadedBooksFragment extends Fragment implements BooksListAdapte
                 Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
             }
         });
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (booksListAdapter != null)
+            booksListAdapter.notifyDataSetChanged();
     }
 
     public void adapterManagement(BooksResponse booksResponse) {
@@ -140,4 +149,6 @@ public class DownloadedBooksFragment extends Fragment implements BooksListAdapte
         booksListAdapter.setItems(booksResponse.getResults());
         layoutManager.scrollToPosition(0);
     }
+
+
 }

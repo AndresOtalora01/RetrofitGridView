@@ -5,6 +5,11 @@
 
     <group>
         <item
+            android:id="@+id/nav_all_books"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="@string/all_books"
+            app:showAsAction="ifRoom"/>
+        <item
             android:id="@+id/nav_downloaded_books"
             android:icon="@drawable/ic_baseline_file_download_off_24"
             android:title="@string/downloaded_books"

@@ -19,6 +19,7 @@ import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.ui.book.BooksManagement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.ViewHolder> implements Filterable {
@@ -64,7 +65,7 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
         TextView author;
         ImageView iconDownloaded;
         OnBookListener onBookListener;
-        List<Integer> downloadedBooksList;
+        List<String> downloadedBooksList;
 
         ViewHolder(View itemView, OnBookListener onBookListener) {
             super(itemView);
@@ -78,7 +79,7 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
 
         void bindData(final Book item) {
             downloadedBooksList = new ArrayList<>();
-            downloadedBooksList = BooksManagement.getBooksManagement().getSavedBooks();
+            downloadedBooksList = Arrays.asList(BooksManagement.getBooksManagement().getSavedBooks());
 
             if (downloadedBooksList.contains(item.getId())) {
                 iconDownloaded.setVisibility(View.VISIBLE);

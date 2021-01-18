@@ -3,6 +3,9 @@ package com.example.retrofitgridview.ui.main;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +34,7 @@ import com.example.retrofitgridview.models.BooksResponse;
 import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.ui.book.BookActivity;
 import com.example.retrofitgridview.ui.book.DownloadedBooksFragment;
+import com.example.retrofitgridview.ui.book.MainListFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -41,95 +45,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends BaseActivity implements BooksListAdapter.OnBookListener {
+public class MainActivity extends BaseActivity {
 
-    private int actualPage = 1;
-    private RecyclerView recyclerView;
-    private BooksListAdapter booksListAdapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private ImageView backArrow;
-    private TextView tvBooksPage;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
-    private ArrayList<Book> listado;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        backArrow = findViewById(R.id.ivPrevious);
-        recyclerView = findViewById(R.id.recyclerView);
-        tvBooksPage = findViewById(R.id.tvBooksPage);
         setNavigationDrawer();
-        getAllBooks();
-    }
-
-    public void getAllBooks() {
-        if (actualPage == 1) {
-            backArrow.setVisibility(View.GONE);
-        } else {
-            backArrow.setVisibility(View.VISIBLE);
-        }
-        showProgressDialog();
-        Call<BooksResponse> booksResponse = ApiClient.getInterface().getAllBooks(actualPage);
-        booksResponse.enqueue(new Callback<BooksResponse>() {
-            @Override
-            public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
-                hideProgressDialog();
-                tvBooksPage.setText(actualPage + "");
-                if (response.code() == 200) {
-                    Log.d("Buscaminas", response.body().toString());
-                    listado  = response.body().getResults();
-                    adapterManagement(response.body());
-                } else {
-                    String message = "ERROR. Try again later";
-                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-                    Log.d("Buscaminas", "no funciona");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BooksResponse> call, Throwable t) {
-                hideProgressDialog();
-                String message = t.getLocalizedMessage();
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-            }
-        });
+        selectedItem(R.id.nav_all_books);
 
     }
 
-    public void adapterManagement(BooksResponse booksResponse) {
-        booksResponse = deleteZipFiles(booksResponse);
-        if (booksListAdapter == null) {
-            booksListAdapter = new BooksListAdapter(getApplicationContext(), MainActivity.this::onBookClick);
-            layoutManager = new LinearLayoutManager(getApplicationContext());
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setAdapter(booksListAdapter);
-        }
-        booksListAdapter.setItems(booksResponse.getResults());
-        layoutManager.scrollToPosition(0);
-    }
-
-    @Override
-    public void onBookClick(int position) {
-        Book book = (Book) booksListAdapter.getItem(position);
-        startActivity(new Intent(this, BookActivity.class).putExtra("data", book));
-    }
-
-    public void onNextClick(View view) {
-        actualPage++;
-        getAllBooks();
-    }
-
-    public void onPreviousClick(View view) {
-        if (actualPage > 0) {
-            actualPage--;
-            getAllBooks();
-        }
-    }
-
-    private BooksResponse deleteZipFiles(BooksResponse booksResponse) {
+    public BooksResponse deleteZipFiles(BooksResponse booksResponse) {
         ArrayList<Book> books = booksResponse.getResults();
         for (Iterator<Book> iterator = books.iterator(); iterator.hasNext(); ) {
             Book book = iterator.next();
@@ -143,62 +75,55 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         return booksResponse;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.search_menu, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.actionSearch);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        searchView.setQueryHint(getResources().getString(R.string.search));
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater menuInflater = getMenuInflater();
+//        menuInflater.inflate(R.menu.search_menu, menu);
+//
+//        MenuItem searchItem = menu.findItem(R.id.actionSearch);
+//        SearchView searchView = (SearchView) searchItem.getActionView();
+//        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+//        searchView.setQueryHint(getResources().getString(R.string.search));
+//
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                showProgressDialog();
+//                Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBook(query);
+//                booksResponse.enqueue(new Callback<BooksResponse>() {
+//                    @Override
+//                    public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
+//                        hideProgressDialog();
+//                        if (response.code() == 200) {
+//                            Log.d("Buscaminas", response.body().toString());
+//                           // adapterManagement(response.body());
+//                        } else {
+//                            String message = "ERROR. Try again later";
+//                            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+//                            Log.d("Buscaminas", "no funciona");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<BooksResponse> call, Throwable t) {
+//                        hideProgressDialog();
+//                        String message = t.getLocalizedMessage();
+//                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                // booksListAdapter.getFilter().filter(newText);
+//                return false;
+//            }
+//        });
+//        return true;
+//    }
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                showProgressDialog();
-                Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBook(query);
-                booksResponse.enqueue(new Callback<BooksResponse>() {
-                    @Override
-                    public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
-                        hideProgressDialog();
-                        if (response.code() == 200) {
-                            Log.d("Buscaminas", response.body().toString());
-                            adapterManagement(response.body());
-                        } else {
-                            String message = "ERROR. Try again later";
-                            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-                            Log.d("Buscaminas", "no funciona");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<BooksResponse> call, Throwable t) {
-                        hideProgressDialog();
-                        String message = t.getLocalizedMessage();
-                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-                    }
-                });
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // booksListAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-        return true;
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //update whatever your list
-        if (booksListAdapter != null)
-            booksListAdapter.notifyDataSetChanged();
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -209,6 +134,7 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         return super.onOptionsItemSelected(item);
     }
 
+
     public void setNavigationDrawer() {
         drawerLayout = findViewById(R.id.activity_main);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.Open, R.string.Close);
@@ -217,12 +143,22 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.navigationView);
 
+
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            DownloadedBooksFragment downloadedBooksFragment =new DownloadedBooksFragment(listado);
+
             switch (id) {
+
+                case R.id.nav_all_books:
+                    MainListFragment mainListFragment = new MainListFragment();
+                    setFragment(mainListFragment);
+                    drawerLayout.closeDrawers();
+                    break;
+
                 case R.id.nav_downloaded_books:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.activity_main, downloadedBooksFragment).commit();
+                    DownloadedBooksFragment downloadedBooksFragment = new DownloadedBooksFragment();
+                    setFragment(downloadedBooksFragment);
+                    drawerLayout.closeDrawers();
                     break;
                 default:
                     return true;
@@ -231,4 +167,30 @@ public class MainActivity extends BaseActivity implements BooksListAdapter.OnBoo
         });
     }
 
+    public void setFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.contentFragment, fragment, "fragment")
+                .addToBackStack(null)
+                .commit();
+    }
+
+
+    public void selectedItem(int id) {
+        switch (id) {
+            case R.id.nav_all_books:
+                MainListFragment mainListFragment = new MainListFragment();
+                setFragment(mainListFragment);
+                break;
+            case R.id.nav_downloaded_books:
+                DownloadedBooksFragment downloadedBooksFragment = new DownloadedBooksFragment();
+                setFragment(downloadedBooksFragment);
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }
