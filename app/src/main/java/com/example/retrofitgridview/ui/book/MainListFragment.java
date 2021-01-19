@@ -39,7 +39,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainListFragment extends Fragment implements BooksListAdapter.OnBookListener {
-
+    private static final String BOOLEAN_ARG = "argBoolean";
+    private static final String QUERY_ARG = "argQuery";
     private ArrayList<Book> booksList;
     private ImageView backArrow;
     private ImageView nextArrow;
@@ -48,29 +49,40 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     private RecyclerView recyclerView;
     private BooksListAdapter booksListAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private boolean isSavedBooks;
+    private String bookQuery;
 
     public MainListFragment() {
         booksList = new ArrayList<>();
     }
 
 
-    public static MainListFragment newInstance(String param1, String param2) {
+    public static MainListFragment newInstance(String query, Boolean isSavedBooks) {
         MainListFragment fragment = new MainListFragment();
+        Bundle args = new Bundle();
+        args.putString(QUERY_ARG, query);
+        args.putBoolean(BOOLEAN_ARG, isSavedBooks);
+        fragment.setArguments(args);
+
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            bookQuery = arguments.getString(QUERY_ARG);
+            isSavedBooks = arguments.getBoolean(BOOLEAN_ARG);
+        }
+
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getAllBooks();
-        backArrow.setOnClickListener(v -> {
-            actualPage--;
-            getAllBooks();
-        });
-        nextArrow.setOnClickListener(v -> {
-            actualPage++;
-            getAllBooks();
-        });
+        getBooks();
+
     }
 
     @Override
@@ -99,6 +111,25 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     }
 
 
+    public void getBooks() {
+        if (bookQuery == null && isSavedBooks) {
+            getSavedBooks();
+        } else if (bookQuery != null) {
+            getSearchBooks();
+        } else {
+            getAllBooks();
+            backArrow.setOnClickListener(v -> {
+                actualPage--;
+                getAllBooks();
+            });
+            nextArrow.setOnClickListener(v -> {
+                actualPage++;
+                getAllBooks();
+            });
+        }
+
+    }
+
     public void getAllBooks() {
         if (actualPage == 1) {
             backArrow.setVisibility(View.GONE);
@@ -108,6 +139,81 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
 
         ((BaseActivity) getActivity()).showProgressDialog();
         Call<BooksResponse> booksResponse = ApiClient.getInterface().getAllBooks(actualPage);
+        booksResponse.enqueue(new Callback<BooksResponse>() {
+            @Override
+            public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
+                ((BaseActivity) getActivity()).hideProgressDialog();
+                tvBooksPage.setText(actualPage + "");
+                if (response.code() == 200) {
+                    Log.d("Buscaminas", response.body().toString());
+                    booksList = response.body().getResults();
+                    adapterManagement(response.body());
+                } else {
+                    String message = "ERROR. Try again later";
+                    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                    Log.d("Buscaminas", "no funciona");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BooksResponse> call, Throwable t) {
+                ((BaseActivity) getActivity()).hideProgressDialog();
+                String message = t.getLocalizedMessage();
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    public void getSavedBooks() {
+        if (actualPage == 1) {
+            backArrow.setVisibility(View.GONE);
+        } else {
+            backArrow.setVisibility(View.VISIBLE);
+        }
+        ((BaseActivity) getActivity()).showProgressDialog();
+        String[] savedBooks = BooksManagement.getBooksManagement().getSavedBooks();
+        StringBuilder queryValues = new StringBuilder();
+        for (int i = 0; i < savedBooks.length; i++) {
+            if (i != savedBooks.length - 1)
+                queryValues = queryValues.append(savedBooks[i] + ",");
+            else queryValues.append(savedBooks[i]);
+        }
+        Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBooks(queryValues.toString());
+        booksResponse.enqueue(new Callback<BooksResponse>() {
+            @Override
+            public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
+                tvBooksPage.setText(actualPage + "");
+                if (response.code() == 200) {
+                    ((BaseActivity) getActivity()).hideProgressDialog();
+                    Log.d("Buscaminas", response.body().toString());
+                    booksList = response.body().getResults();
+                    adapterManagement(response.body());
+                    actualPage++;
+                } else {
+                    String message = "ERROR. Try again later";
+                    Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                    Log.d("Buscaminas", "no funciona");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BooksResponse> call, Throwable t) {
+                ((BaseActivity) getActivity()).hideProgressDialog();
+                String message = t.getLocalizedMessage();
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void getSearchBooks() {
+        if (actualPage == 1) {
+            backArrow.setVisibility(View.GONE);
+        } else {
+            backArrow.setVisibility(View.VISIBLE);
+        }
+        ((BaseActivity) getActivity()).showProgressDialog();
+        Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBook(bookQuery);
         booksResponse.enqueue(new Callback<BooksResponse>() {
             @Override
             public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
@@ -165,7 +271,5 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         return booksResponse;
     }
 
-    public BooksListAdapter getBooksListAdapter() {
-        return booksListAdapter;
-    }
+
 }

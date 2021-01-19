@@ -11,30 +11,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.SearchView;
-import android.widget.Toast;
 
-import com.example.retrofitgridview.network.ApiClient;
-import com.example.retrofitgridview.models.Book;
-import com.example.retrofitgridview.models.BooksResponse;
 import com.example.retrofitgridview.R;
-import com.example.retrofitgridview.ui.book.DownloadedBooksFragment;
 import com.example.retrofitgridview.ui.book.MainListFragment;
-import com.example.retrofitgridview.ui.book.SearchBooksFragment;
 import com.google.android.material.navigation.NavigationView;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends BaseActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
-    private MainListFragment mainListFragment;
+    private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +29,6 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         setNavigationDrawer();
         selectedItem(R.id.nav_all_books);
-
     }
 
 
@@ -59,8 +45,8 @@ public class MainActivity extends BaseActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                SearchBooksFragment downloadedBooksFragment = new SearchBooksFragment(query);
-                setFragment(downloadedBooksFragment);
+                MainListFragment mainListFragment = MainListFragment.newInstance(query, false);
+                setFragment(mainListFragment);
                 return false;
             }
 
@@ -95,22 +81,20 @@ public class MainActivity extends BaseActivity {
 
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-
+            MainListFragment mainListFragment;
             switch (id) {
 
                 case R.id.nav_all_books:
-                    setFragment(mainListFragment);
-                    drawerLayout.closeDrawers();
+                    mainListFragment = MainListFragment.newInstance(null, false);
                     break;
-
                 case R.id.nav_downloaded_books:
-                    DownloadedBooksFragment downloadedBooksFragment = new DownloadedBooksFragment();
-                    setFragment(downloadedBooksFragment);
-                    drawerLayout.closeDrawers();
+                    mainListFragment = MainListFragment.newInstance(null, true);
                     break;
                 default:
                     return true;
             }
+            setFragment(mainListFragment);
+            drawerLayout.closeDrawers();
             return true;
         });
     }
@@ -118,27 +102,28 @@ public class MainActivity extends BaseActivity {
     public void setFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.contentFragment, fragment, "fragment")
                 .addToBackStack(null)
+                .add(R.id.contentFragment, fragment, "fragment")
                 .commit();
     }
 
 
     public void selectedItem(int id) {
-        switch (id) {
-            case R.id.nav_all_books:
-                mainListFragment = new MainListFragment();
-                setFragment(mainListFragment);
-                break;
-            case R.id.nav_downloaded_books:
-                DownloadedBooksFragment downloadedBooksFragment = new DownloadedBooksFragment();
-                setFragment(downloadedBooksFragment);
-                break;
+        MainListFragment mainListFragment;
+        if (id == R.id.nav_all_books) {
+            mainListFragment = MainListFragment.newInstance(null, false);
+        } else {
+            mainListFragment = new MainListFragment();
         }
+        setFragment(mainListFragment);
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+            finish();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
