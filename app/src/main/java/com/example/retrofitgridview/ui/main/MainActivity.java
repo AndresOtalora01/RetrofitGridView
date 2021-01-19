@@ -45,7 +45,7 @@ public class MainActivity extends BaseActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                MainListFragment mainListFragment = MainListFragment.newInstance(query, false);
+                MainListFragment mainListFragment = MainListFragment.newInstance(query);
                 setFragment(mainListFragment);
                 return false;
             }
@@ -85,10 +85,10 @@ public class MainActivity extends BaseActivity {
             switch (id) {
 
                 case R.id.nav_all_books:
-                    mainListFragment = MainListFragment.newInstance(null, false);
+                    mainListFragment = MainListFragment.newInstance();
                     break;
                 case R.id.nav_downloaded_books:
-                    mainListFragment = MainListFragment.newInstance(null, true);
+                    mainListFragment = MainListFragment.newInstance(true);
                     break;
                 default:
                     return true;
@@ -111,7 +111,7 @@ public class MainActivity extends BaseActivity {
     public void selectedItem(int id) {
         MainListFragment mainListFragment;
         if (id == R.id.nav_all_books) {
-            mainListFragment = MainListFragment.newInstance(null, false);
+            mainListFragment = MainListFragment.newInstance();
         } else {
             mainListFragment = new MainListFragment();
         }

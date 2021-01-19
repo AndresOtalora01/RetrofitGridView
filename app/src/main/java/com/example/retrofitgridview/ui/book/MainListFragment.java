@@ -57,10 +57,22 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     }
 
 
-    public static MainListFragment newInstance(String query, Boolean isSavedBooks) {
+    public static MainListFragment newInstance() {
+        return new MainListFragment();
+    }
+
+    public static MainListFragment newInstance(String query) {
         MainListFragment fragment = new MainListFragment();
         Bundle args = new Bundle();
         args.putString(QUERY_ARG, query);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    public static MainListFragment newInstance(Boolean isSavedBooks) {
+        MainListFragment fragment = new MainListFragment();
+        Bundle args = new Bundle();
         args.putBoolean(BOOLEAN_ARG, isSavedBooks);
         fragment.setArguments(args);
 
@@ -70,12 +82,15 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            bookQuery = arguments.getString(QUERY_ARG);
-            isSavedBooks = arguments.getBoolean(BOOLEAN_ARG);
-        }
 
+        Bundle arguments = getArguments();
+        if(arguments != null) {
+            if (arguments.containsKey(QUERY_ARG)) {
+                bookQuery = arguments.getString(QUERY_ARG);
+            } else if (arguments.containsKey(BOOLEAN_ARG)) {
+                isSavedBooks = arguments.getBoolean(BOOLEAN_ARG);
+            }
+        }
     }
 
     @Override
