@@ -26,7 +26,7 @@ import com.example.retrofitgridview.ui.main.BooksListAdapter;
 import com.example.retrofitgridview.ui.main.MainActivity;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -104,7 +104,7 @@ public class DownloadedBooksFragment extends Fragment implements BooksListAdapte
                 queryValues = queryValues.append(savedBooks[i] + ",");
             else queryValues.append(savedBooks[i]);
         }
-        Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBook(queryValues.toString());
+        Call<BooksResponse> booksResponse = ApiClient.getInterface().getSpecificBooks(queryValues.toString());
         booksResponse.enqueue(new Callback<BooksResponse>() {
             @Override
             public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
@@ -132,12 +132,26 @@ public class DownloadedBooksFragment extends Fragment implements BooksListAdapte
     }
 
     public void adapterManagement(BooksResponse booksResponse) {
-        booksResponse = ((MainActivity) getActivity()).deleteZipFiles(booksResponse);
+        booksResponse = deleteZipFiles(booksResponse);
         if (booksListAdapter == null) {
             booksListAdapter = new BooksListAdapter(getContext(), this::onBookClick);
             recyclerView.setAdapter(booksListAdapter);
         }
         booksListAdapter.setItems(booksResponse.getResults());
         layoutManager.scrollToPosition(0);
+    }
+
+    public BooksResponse deleteZipFiles(BooksResponse booksResponse) {
+        ArrayList<Book> books = booksResponse.getResults();
+        for (Iterator<Book> iterator = books.iterator(); iterator.hasNext(); ) {
+            Book book = iterator.next();
+            if ((book.getFormats().getTextPlain() != null && !book.getFormats().getTextPlain().endsWith(".txt"))
+                    || (book.getFormats().getTextPlainIso() != null && !book.getFormats().getTextPlainIso().endsWith(".txt"))
+                    && (book.getFormats().getTextPlainAscii() != null && !book.getFormats().getTextPlainAscii().endsWith(".txt"))) {
+                iterator.remove();
+            }
+        }
+        booksResponse.setResults(books);
+        return booksResponse;
     }
 }

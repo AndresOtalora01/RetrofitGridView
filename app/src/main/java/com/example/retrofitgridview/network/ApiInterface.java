@@ -21,7 +21,10 @@ public interface ApiInterface {
     Call<BooksResponse> getNextBooks(@Url String url);
 
     @GET("books/")
-    Call<BooksResponse> getSpecificBook (@Query("ids") String query);
+    Call<BooksResponse> getSpecificBooks(@Query("ids") String query);
+
+    @GET("books/")
+    Call<BooksResponse> getSpecificBook (@Query("search") String query);
 
 
 
