@@ -40,11 +40,19 @@ public class MainActivity extends BaseActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.search_menu, menu);
 
+        MenuItem filterItem = menu.findItem(R.id.actionFilter);
         MenuItem searchItem = menu.findItem(R.id.actionSearch);
         searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setQueryHint(getResources().getString(R.string.search));
 
+        filterItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                openDialog();
+                return false;
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -135,5 +143,9 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    public void openDialog(){
+        FilterDialog filterDialog = new FilterDialog();
+        filterDialog.show(getSupportFragmentManager(),"filter dialog");
+    }
 
 }

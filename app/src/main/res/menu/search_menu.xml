@@ -3,12 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/actionSearch"
-        android:title="@string/search_menu"
         android:icon="@drawable/ic_search"
         android:iconifiedByDefault="false"
-        android:searchIcon="@null"
         android:searchHintIcon="@null"
-        app:searchHintIcon="@null"
+        android:searchIcon="@null"
+        android:title="@string/search_menu"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="ifRoom"/>
+        app:searchHintIcon="@null"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/actionFilter"
+        android:icon="@drawable/ic_filter"
+        android:iconifiedByDefault="false"
+        android:searchHintIcon="@null"
+        android:searchIcon="@null"
+        android:title="filter"
+        app:searchHintIcon="@null"
+        app:showAsAction="ifRoom" />
 </menu>

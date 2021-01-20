@@ -16,4 +16,5 @@
     <string name="search_menu">Search</string>
     <string name="search">Buscar...</string>
     <string name="all_books">Todos los libros</string>
+    <string name="copyright">Copyright</string>
 </resources>
