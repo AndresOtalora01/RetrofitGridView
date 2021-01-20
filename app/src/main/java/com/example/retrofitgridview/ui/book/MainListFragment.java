@@ -1,18 +1,12 @@
 package com.example.retrofitgridview.ui.book;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +22,6 @@ import com.example.retrofitgridview.models.BooksResponse;
 import com.example.retrofitgridview.network.ApiClient;
 import com.example.retrofitgridview.ui.main.BaseActivity;
 import com.example.retrofitgridview.ui.main.BooksListAdapter;
-import com.example.retrofitgridview.ui.main.MainActivity;
-import com.fasterxml.jackson.databind.ser.Serializers;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainListFragment extends Fragment implements BooksListAdapter.OnBookListener {
-    private static final String BOOLEAN_ARG = "argBoolean";
+    private static final String SAVED_BOOKS_ARG = "argSavedBooks";
     private static final String QUERY_ARG = "argQuery";
     private ArrayList<Book> booksList;
     private ImageView backArrow;
@@ -51,11 +43,11 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     private RecyclerView.LayoutManager layoutManager;
     private boolean isSavedBooks;
     private String bookQuery;
+    private View bottomContainer;
 
     public MainListFragment() {
         booksList = new ArrayList<>();
     }
-
 
     public static MainListFragment newInstance() {
         return new MainListFragment();
@@ -66,14 +58,13 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         Bundle args = new Bundle();
         args.putString(QUERY_ARG, query);
         fragment.setArguments(args);
-
         return fragment;
     }
 
     public static MainListFragment newInstance(Boolean isSavedBooks) {
         MainListFragment fragment = new MainListFragment();
         Bundle args = new Bundle();
-        args.putBoolean(BOOLEAN_ARG, isSavedBooks);
+        args.putBoolean(SAVED_BOOKS_ARG, isSavedBooks);
         fragment.setArguments(args);
 
         return fragment;
@@ -84,11 +75,11 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         super.onCreate(savedInstanceState);
 
         Bundle arguments = getArguments();
-        if(arguments != null) {
+        if (arguments != null) {
             if (arguments.containsKey(QUERY_ARG)) {
                 bookQuery = arguments.getString(QUERY_ARG);
-            } else if (arguments.containsKey(BOOLEAN_ARG)) {
-                isSavedBooks = arguments.getBoolean(BOOLEAN_ARG);
+            } else if (arguments.containsKey(SAVED_BOOKS_ARG)) {
+                isSavedBooks = arguments.getBoolean(SAVED_BOOKS_ARG);
             }
         }
     }
@@ -97,14 +88,13 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getBooks();
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_list, container, false);
-
+        bottomContainer = view.findViewById(R.id.bottomContainer);
         backArrow = view.findViewById(R.id.ivPrevious);
         nextArrow = view.findViewById(R.id.ivNext);
         tvBooksPage = view.findViewById(R.id.tvBooksPage);
@@ -112,7 +102,6 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
         BooksListAdapter booksListAdapter = new BooksListAdapter(getContext(), this::onBookClick);
-
         recyclerView.setAdapter(booksListAdapter);
         booksListAdapter.setItems(booksList);
         layoutManager.scrollToPosition(0);
@@ -125,9 +114,9 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         startActivity(new Intent(getActivity(), BookActivity.class).putExtra("data", book));
     }
 
-
     public void getBooks() {
         if (bookQuery == null && isSavedBooks) {
+            bottomContainer.setVisibility(View.GONE);
             getSavedBooks();
         } else if (bookQuery != null) {
             getSearchBooks();
@@ -142,7 +131,6 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
                 getAllBooks();
             });
         }
-
     }
 
     public void getAllBooks() {
@@ -285,6 +273,8 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         booksResponse.setResults(books);
         return booksResponse;
     }
+
+
 
 
 }

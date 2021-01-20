@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Book implements Serializable {
 
-    private int id;
+    private String id;
     private String title;
     private ArrayList<Author> authors;
     private ArrayList<String> subjects;
@@ -16,16 +16,16 @@ public class Book implements Serializable {
     private Format formats;
     private int download_count;
 
-    public Book(int id, String title) {
+    public Book(String id, String title) {
         this.id = id;
         this.title = title;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

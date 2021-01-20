@@ -9,8 +9,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.ui.book.MainListFragment;
@@ -21,7 +24,7 @@ public class MainActivity extends BaseActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
-    private int counter = 0;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,7 @@ public class MainActivity extends BaseActivity {
         menuInflater.inflate(R.menu.search_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.actionSearch);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setQueryHint(getResources().getString(R.string.search));
 
@@ -86,9 +89,11 @@ public class MainActivity extends BaseActivity {
 
                 case R.id.nav_all_books:
                     mainListFragment = MainListFragment.newInstance();
+                    searchView.setVisibility(View.VISIBLE);
                     break;
                 case R.id.nav_downloaded_books:
                     mainListFragment = MainListFragment.newInstance(true);
+                    searchView.setVisibility(View.GONE);
                     break;
                 default:
                     return true;
@@ -120,10 +125,15 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        if (searchView.getVisibility() == View.GONE) {
+            searchView.setVisibility(View.VISIBLE);
+        }
         if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
             finish();
         } else {
             super.onBackPressed();
         }
     }
+
+
 }

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.ViewHolder> implements Filterable {
+public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.ViewHolder>  {
     private OnBookListener mOnBookListener;
     private List<Book> books = new ArrayList<>();
     private Context context;
@@ -69,7 +69,7 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
 
         ViewHolder(View itemView, OnBookListener onBookListener) {
             super(itemView);
-            iconImage = (ImageView) itemView.findViewById(R.id.iconImageView);
+            iconImage = itemView.findViewById(R.id.iconImageView);
             title = itemView.findViewById(R.id.tvTitle);
             author = itemView.findViewById(R.id.tvAuthor);
             iconDownloaded = itemView.findViewById(R.id.ivDownloaded);
@@ -108,45 +108,8 @@ public class BooksListAdapter extends RecyclerView.Adapter<BooksListAdapter.View
     }
 
 
-    @Override
-    public Filter getFilter() {
-        return bookFilter;
-    }
-
-    private Filter bookFilter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) { // this method will be automatically executed on the background thread.
-            List<Book> filteredBooks = new ArrayList<>();
-
-            if (constraint == null || constraint.length() == 0) {
-                filteredBooks.addAll(fullBooksList);
-            } else {
-                String filterPattern = constraint.toString().toLowerCase().trim();
-
-                for (Book book : fullBooksList) {
-                    if (book.getTitle().toLowerCase().contains(filterPattern)) {
-                        filteredBooks.add(book);
-                    }
-                }
-            }
-            FilterResults results = new FilterResults();
-            results.values = filteredBooks;
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            books.clear();
-            books.addAll((List) results.values);
-            notifyDataSetChanged();
-        }
-    };
-
-
     public Book getItem(int position) {
         return books.get(position);
     }
-
-
 
 }
