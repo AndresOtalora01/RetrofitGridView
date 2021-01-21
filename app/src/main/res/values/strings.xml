@@ -17,4 +17,6 @@
     <string name="search">Buscar...</string>
     <string name="all_books">Todos los libros</string>
     <string name="copyright">Copyright</string>
+    <string name="from_year">Desde:</string>
+    <string name="to_year">Hasta:</string>
 </resources>

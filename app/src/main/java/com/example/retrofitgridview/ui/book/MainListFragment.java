@@ -22,6 +22,7 @@ import com.example.retrofitgridview.models.BooksResponse;
 import com.example.retrofitgridview.network.ApiClient;
 import com.example.retrofitgridview.ui.main.BaseActivity;
 import com.example.retrofitgridview.ui.main.BooksListAdapter;
+import com.example.retrofitgridview.ui.main.FilterDialog;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -273,7 +274,6 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         booksResponse.setResults(books);
         return booksResponse;
     }
-
 
 
 

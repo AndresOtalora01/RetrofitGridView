@@ -19,7 +19,7 @@ import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.ui.book.MainListFragment;
 import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements FilterDialog.FilterDialogListener {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -46,12 +46,9 @@ public class MainActivity extends BaseActivity {
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setQueryHint(getResources().getString(R.string.search));
 
-        filterItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                openDialog();
-                return false;
-            }
+        filterItem.setOnMenuItemClickListener(item -> {
+            openDialog();
+            return false;
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -143,9 +140,15 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void openDialog(){
+    public void openDialog() {
         FilterDialog filterDialog = new FilterDialog();
-        filterDialog.show(getSupportFragmentManager(),"filter dialog");
+        filterDialog.show(getSupportFragmentManager(), "filter dialog");
     }
 
+    @Override
+    public void getFilters(Boolean copyright, String fromYear, String toYear) {
+        Log.d("filtros", copyright+"");
+        Log.d("filtros", fromYear+"");
+        Log.d("filtros", toYear+"");
+    }
 }
