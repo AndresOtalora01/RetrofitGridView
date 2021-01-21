@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,16 @@ public class FilterDialog extends AppCompatDialogFragment {
     private TextView tvToYear;
     private FilterDialogListener listener;
 
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String FROM_YEAR = "fromYear";
+    public static final String TO_YEAR = "toYear";
+    public static final String SWITCH_COPYRIGHT = "switchCopyright";
+
+
+    private Boolean savedSwitch;
+    private String savedFromYear;
+    private String savedToYear;
+
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -50,9 +61,11 @@ public class FilterDialog extends AppCompatDialogFragment {
                     String fromYear = tvFromYear.getText().toString();
                     String toYear = tvToYear.getText().toString();
                     listener.getFilters(copyright, fromYear, toYear);
+                    saveFilters();
                 });
 
-
+        loadFilters();
+        updateFilters();
         return builder.create();
     }
 
@@ -86,6 +99,29 @@ public class FilterDialog extends AppCompatDialogFragment {
         view.setOnClickListener(v -> {
             createDialogWithoutDateField((TextView) v).show();
         });
+    }
+
+    public void saveFilters() {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SWITCH_COPYRIGHT, swCopyRight.isChecked());
+        editor.putString(FROM_YEAR, tvFromYear.getText().toString());
+        editor.putString(TO_YEAR, tvToYear.getText().toString());
+        editor.apply();
+
+    }
+
+    public void loadFilters() {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        savedSwitch = sharedPreferences.getBoolean(SWITCH_COPYRIGHT, false);
+        savedFromYear = sharedPreferences.getString(FROM_YEAR, "");
+        savedToYear = sharedPreferences.getString(TO_YEAR, "");
+    }
+
+    public void updateFilters() {
+        swCopyRight.setChecked(savedSwitch);
+        tvFromYear.setText(savedFromYear);
+        tvToYear.setText(savedToYear);
     }
 
 }

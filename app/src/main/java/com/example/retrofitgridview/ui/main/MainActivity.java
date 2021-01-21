@@ -34,7 +34,6 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
         selectedItem(R.id.nav_all_books);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
