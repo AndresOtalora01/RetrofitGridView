@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,7 +23,7 @@ import com.example.retrofitgridview.models.BooksResponse;
 import com.example.retrofitgridview.network.ApiClient;
 import com.example.retrofitgridview.ui.main.BaseActivity;
 import com.example.retrofitgridview.ui.main.BooksListAdapter;
-import com.example.retrofitgridview.ui.main.FilterDialog;
+import com.example.retrofitgridview.ui.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,6 +46,9 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     private boolean isSavedBooks;
     private String bookQuery;
     private View bottomContainer;
+    private String fromYear;
+    private String toYear;
+    private Boolean copyright;
 
     public MainListFragment() {
         booksList = new ArrayList<>();
@@ -82,7 +86,10 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
             } else if (arguments.containsKey(SAVED_BOOKS_ARG)) {
                 isSavedBooks = arguments.getBoolean(SAVED_BOOKS_ARG);
             }
+
         }
+
+        Log.d("bookSearch", "onCreate " + bookQuery);
     }
 
     @Override
@@ -109,11 +116,13 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         return view;
     }
 
+
     @Override
     public void onBookClick(int position) {
         Book book = booksListAdapter.getItem(position);
         startActivity(new Intent(getActivity(), BookActivity.class).putExtra("data", book));
     }
+
 
     public void getBooks() {
         if (bookQuery == null && isSavedBooks) {
@@ -244,11 +253,21 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
 
     }
 
+
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (booksListAdapter != null)
+//            booksListAdapter.notifyDataSetChanged();
+//    }
+//
+
     @Override
-    public void onResume() {
-        super.onResume();
-        if (booksListAdapter != null)
-            booksListAdapter.notifyDataSetChanged();
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.d("bookSearch", "onViewStateRestored " + bookQuery);
+        ((MainActivity)getActivity()).updateTextSearchView(bookQuery);
     }
 
     public void adapterManagement(BooksResponse booksResponse) {
@@ -274,7 +293,6 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         booksResponse.setResults(books);
         return booksResponse;
     }
-
 
 
 }

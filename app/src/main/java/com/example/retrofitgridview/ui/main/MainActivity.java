@@ -20,11 +20,18 @@ import com.example.retrofitgridview.ui.book.MainListFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends BaseActivity implements FilterDialog.FilterDialogListener {
+    private static final String FROM_YEAR_ARG = "argFromYear";
+    private static final String TO_YEAR_ARG = "argToYear";
+    private static final String COPYRIGHT_ARG = "argCopyright";
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
     private SearchView searchView;
+    private String searchQuery;
+    private String fromYear;
+    private String toYear;
+    private Boolean copyright;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +59,15 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                MainListFragment mainListFragment = MainListFragment.newInstance(query);
+                searchQuery = query;
+                MainListFragment mainListFragment = MainListFragment.newInstance(searchQuery);
+//                Bundle bundle = new Bundle();
+//                bundle.putString(FROM_YEAR_ARG, fromYear);
+//                bundle.putString(TO_YEAR_ARG, toYear);
+//                bundle.putBoolean(COPYRIGHT_ARG, copyright);
+//                mainListFragment.setArguments(bundle);
                 setFragment(mainListFragment);
+                searchView.clearFocus();
                 return false;
             }
 
@@ -112,7 +126,7 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
         getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
-                .add(R.id.contentFragment, fragment, "fragment")
+                .replace(R.id.contentFragment, fragment, "fragment")
                 .commit();
     }
 
@@ -146,8 +160,21 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
 
     @Override
     public void getFilters(Boolean copyright, String fromYear, String toYear) {
-        Log.d("filtros", copyright+"");
-        Log.d("filtros", fromYear+"");
-        Log.d("filtros", toYear+"");
+        this.copyright = copyright;
+        this.fromYear = fromYear;
+        this.toYear = toYear;
     }
+
+    public void updateTextSearchView(String searchQuery) {
+        if(searchView == null) {
+            return;
+        }
+        if (searchQuery != null)
+            searchView.setQuery(searchQuery, false);
+        else {
+            searchView.setQuery("", false);
+            searchView.setIconified(true);
+        }
+    }
+
 }

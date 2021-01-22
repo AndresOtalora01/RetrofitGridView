@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +30,7 @@ public class FilterDialog extends AppCompatDialogFragment {
     private TextView tvFromYear;
     private TextView tvToYear;
     private FilterDialogListener listener;
+    private Spinner languageSelector;
 
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String FROM_YEAR = "fromYear";
@@ -47,6 +50,11 @@ public class FilterDialog extends AppCompatDialogFragment {
         swCopyRight = view.findViewById(R.id.switchCopyright);
         tvFromYear = view.findViewById(R.id.tvFromYear);
         tvToYear = view.findViewById(R.id.tvToYear);
+        languageSelector = view.findViewById(R.id.spinnerLanguageSelector);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.languages, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        languageSelector.setAdapter(adapter);
+
 
         clickListener(tvFromYear);
         clickListener(tvToYear);
@@ -108,7 +116,6 @@ public class FilterDialog extends AppCompatDialogFragment {
         editor.putString(FROM_YEAR, tvFromYear.getText().toString());
         editor.putString(TO_YEAR, tvToYear.getText().toString());
         editor.apply();
-
     }
 
     public void loadFilters() {
