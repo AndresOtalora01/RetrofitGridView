@@ -30,7 +30,8 @@ public interface ApiInterface {
     Call<BooksResponse> getAllBooks(@Query("search") String query,
                                     @Query("copyright") Boolean copyright,
                                     @Query("author_year_start") String fromYear,
-                                    @Query("author_year_end") String toYear);
+                                    @Query("author_year_end") String toYear,
+                                    @Query("languages") String language);
 
 
 }

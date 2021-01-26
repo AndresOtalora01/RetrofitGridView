@@ -83,6 +83,7 @@
             android:id="@+id/spinnerLanguageSelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
@@ -102,6 +103,7 @@
             android:id="@+id/spinnerCategorySelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
 

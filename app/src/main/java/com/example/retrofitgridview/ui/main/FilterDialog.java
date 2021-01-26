@@ -24,8 +24,14 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import com.example.retrofitgridview.R;
 import com.example.retrofitgridview.ui.book.MainListFragment;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class FilterDialog extends AppCompatDialogFragment implements AdapterView.OnItemSelectedListener {
 
@@ -40,17 +46,23 @@ public class FilterDialog extends AppCompatDialogFragment implements AdapterView
     public static final String FROM_YEAR = "fromYear";
     public static final String TO_YEAR = "toYear";
     public static final String SWITCH_COPYRIGHT = "switchCopyright";
+    public static final String LANGUAGE = "language";
+    public static final String LANGUAGE_SHARED_PREFS = "languageSharedPrefs";
+
 
     private Context context;
+    private String savedLanguage;
     private Boolean savedSwitch;
     private String savedFromYear;
     private String savedToYear;
     private String language;
+    private String[] languagesAbbreviated;
+    private String[] languages;
 
 
     public FilterDialog(Context context) {
         this.context = context;
-        loadFilters();
+       // loadFilters();
     }
 
     @Override
@@ -58,6 +70,10 @@ public class FilterDialog extends AppCompatDialogFragment implements AdapterView
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.filter_dialog, null);
+
+        languages = getResources().getStringArray(R.array.languages);
+        languagesAbbreviated = getResources().getStringArray(R.array.languagesAbbreviation);
+
         swCopyRight = view.findViewById(R.id.switchCopyright);
         tvFromYear = view.findViewById(R.id.tvFromYear);
         tvToYear = view.findViewById(R.id.tvToYear);
@@ -65,25 +81,24 @@ public class FilterDialog extends AppCompatDialogFragment implements AdapterView
         categorySelector = view.findViewById(R.id.spinnerCategorySelector);
         setSpinner(languageSelector, R.array.languages);
         setSpinner(categorySelector, R.array.categories);
-
         clickListener(tvFromYear);
         clickListener(tvToYear);
 
         builder.setView(view)
                 .setTitle("Filtros")
                 .setNegativeButton("Cancelar", (dialog, which) -> {
-
                 })
                 .setPositiveButton("Aplicar", (dialog, which) -> {
                     Boolean copyright = swCopyRight.isChecked();
                     String fromYear = tvFromYear.getText().toString();
                     String toYear = tvToYear.getText().toString();
-                    listener.getFilters(copyright, fromYear, toYear);
+                    String language = languagesAbbreviated[languageSelector.getSelectedItemPosition()];
+                    listener.getFilters(copyright, fromYear, toYear, language);
                     saveFilters();
-                    MainListFragment mainListFragment = MainListFragment.newInstance(fromYear, toYear, copyright);
+                    MainListFragment mainListFragment = MainListFragment.newInstance(fromYear, toYear, copyright, language);
                     ((MainActivity) getActivity()).setFragment(mainListFragment);
                 });
-
+        loadFilters();
         updateFilters();
         return builder.create();
     }
@@ -105,7 +120,7 @@ public class FilterDialog extends AppCompatDialogFragment implements AdapterView
     }
 
     public interface FilterDialogListener {
-        void getFilters(Boolean copyright, String fromYear, String toYear);
+        void getFilters(Boolean copyright, String fromYear, String toYear, String language);
     }
 
     private DatePickerDialog createDialogWithoutDateField(TextView tvYear) {
@@ -131,25 +146,31 @@ public class FilterDialog extends AppCompatDialogFragment implements AdapterView
     }
 
     public void saveFilters() {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(SWITCH_COPYRIGHT, swCopyRight.isChecked());
         editor.putString(FROM_YEAR, tvFromYear.getText().toString());
         editor.putString(TO_YEAR, tvToYear.getText().toString());
+        editor.putString(LANGUAGE, languagesAbbreviated[languageSelector.getSelectedItemPosition()]);
         editor.apply();
     }
 
     public void loadFilters() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         savedSwitch = sharedPreferences.getBoolean(SWITCH_COPYRIGHT, false);
         savedFromYear = sharedPreferences.getString(FROM_YEAR, "");
         savedToYear = sharedPreferences.getString(TO_YEAR, "");
+        String value = sharedPreferences.getString(LANGUAGE, "");
+        int i = Arrays.asList(languagesAbbreviated).indexOf(value);
+        savedLanguage = languages[i];
     }
 
     public void updateFilters() {
         swCopyRight.setChecked(savedSwitch);
         tvFromYear.setText(savedFromYear);
         tvToYear.setText(savedToYear);
+        String[] languages = getResources().getStringArray(R.array.languages);
+        languageSelector.setSelection(Arrays.asList(languages).indexOf(savedLanguage));
     }
 
     public void setSpinner(Spinner spinner, int content) {
@@ -170,4 +191,6 @@ public class FilterDialog extends AppCompatDialogFragment implements AdapterView
     public String getSavedToYear() {
         return savedToYear;
     }
+
+
 }

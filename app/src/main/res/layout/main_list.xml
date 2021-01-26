@@ -14,6 +14,30 @@
         android:layout_above="@+id/bottomContainer"
         android:orientation="vertical" />
 
+    <LinearLayout
+        android:id="@+id/notFoundContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvNotFound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/book_not_found"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_baseline_mood_bad_24" />
+    </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/bottomContainer"
         android:layout_width="match_parent"

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,12 +40,14 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     private static final String FROM_YEAR_ARG = "argFromYear";
     private static final String TO_YEAR_ARG = "argToYear";
     private static final String COPYRIGHT_ARG = "argCopyright";
+    private static final String LANGUAGE_ARG = "argLanguage";
     private ArrayList<Book> booksList;
     private ImageView backArrow;
     private ImageView nextArrow;
     private TextView tvBooksPage;
     private int actualPage = 1;
     private RecyclerView recyclerView;
+    private LinearLayout notFoundContainer;
     private BooksListAdapter booksListAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private boolean isSavedBooks;
@@ -53,6 +56,7 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     private String fromYear;
     private String toYear;
     private Boolean copyright;
+    private String language;
 
     public MainListFragment() {
         booksList = new ArrayList<>();
@@ -62,13 +66,14 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         return new MainListFragment();
     }
 
-    public static MainListFragment newInstance(String query, String fromYear, String toYear, Boolean copyright) {
+    public static MainListFragment newInstance(String query, String fromYear, String toYear, Boolean copyright, String language) {
         MainListFragment fragment = new MainListFragment();
         Bundle args = new Bundle();
         args.putString(QUERY_ARG, query);
         args.putString(FROM_YEAR_ARG, fromYear);
         args.putString(TO_YEAR_ARG, toYear);
         args.putBoolean(COPYRIGHT_ARG, copyright);
+        args.putString(LANGUAGE_ARG, language);
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,12 +87,13 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
         return fragment;
     }
 
-    public static MainListFragment newInstance(String fromYear, String toYear, Boolean copyright) {
+    public static MainListFragment newInstance(String fromYear, String toYear, Boolean copyright, String language) {
         MainListFragment fragment = new MainListFragment();
         Bundle args = new Bundle();
         args.putString(FROM_YEAR_ARG, fromYear);
         args.putString(TO_YEAR_ARG, toYear);
         args.putBoolean(COPYRIGHT_ARG, copyright);
+        args.putString(LANGUAGE_ARG, language);
         fragment.setArguments(args);
         return fragment;
     }
@@ -102,16 +108,16 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
                 fromYear = arguments.getString(FROM_YEAR_ARG);
                 toYear = arguments.getString(TO_YEAR_ARG);
                 copyright = arguments.getBoolean(COPYRIGHT_ARG);
+                language = arguments.getString(LANGUAGE_ARG);
             } else if (arguments.containsKey(SAVED_BOOKS_ARG)) {
                 isSavedBooks = arguments.getBoolean(SAVED_BOOKS_ARG);
             } else {
                 fromYear = arguments.getString(FROM_YEAR_ARG);
                 toYear = arguments.getString(TO_YEAR_ARG);
                 copyright = arguments.getBoolean(COPYRIGHT_ARG);
+                language = arguments.getString(LANGUAGE_ARG);
             }
         }
-        Log.d("filtrosFragment", fromYear + " " + toYear + " " + copyright);
-        Log.d("bookSearch", "onCreate " + bookQuery);
     }
 
     @Override
@@ -124,6 +130,7 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_list, container, false);
+        notFoundContainer = view.findViewById(R.id.notFoundContainer);
         bottomContainer = view.findViewById(R.id.bottomContainer);
         backArrow = view.findViewById(R.id.ivPrevious);
         nextArrow = view.findViewById(R.id.ivNext);
@@ -209,7 +216,7 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
             backArrow.setVisibility(View.VISIBLE);
         }
         ((BaseActivity) getActivity()).showProgressDialog();
-        Call<BooksResponse> booksResponse = ApiClient.getInterface().getAllBooks(bookQuery, copyright, fromYear, toYear);
+        Call<BooksResponse> booksResponse = ApiClient.getInterface().getAllBooks(bookQuery, copyright, fromYear, toYear, language);
         booksResponse.enqueue(new Callback<BooksResponse>() {
             @Override
             public void onResponse(Call<BooksResponse> call, Response<BooksResponse> response) {
@@ -217,7 +224,9 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
                 if (response.code() == 200) {
                     Log.d("Buscaminas", response.body().toString());
                     if (response.body().getResults().isEmpty()) {
-                        Toast.makeText(getContext(), "No se encontraron libros", Toast.LENGTH_LONG).show();
+                        recyclerView.setVisibility(View.GONE);
+                        notFoundContainer.setVisibility(View.VISIBLE);
+                        bottomContainer.setVisibility(View.GONE);
                     } else {
                         booksList = response.body().getResults();
                         adapterManagement(response.body());
@@ -228,8 +237,6 @@ public class MainListFragment extends Fragment implements BooksListAdapter.OnBoo
                     Log.d("Buscaminas", "no funciona");
                 }
             }
-
-
             @Override
             public void onFailure(Call<BooksResponse> call, Throwable t) {
                 ((BaseActivity) getActivity()).hideProgressDialog();

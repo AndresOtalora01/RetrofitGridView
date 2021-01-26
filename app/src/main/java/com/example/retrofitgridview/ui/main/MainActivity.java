@@ -30,6 +30,7 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
     private String searchQuery;
     private String fromYear;
     private String toYear;
+    private String language;
     private Boolean copyright;
     private FilterDialog filterDialog;
 
@@ -40,7 +41,7 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
         setNavigationDrawer();
         filterDialog = new FilterDialog(this);
         getSavedFilters();
-        Log.d("filtrosOnCreate", fromYear + " " + toYear + " " + copyright);
+        Log.d("filtrosOnCreate", fromYear + " " + toYear + " " + copyright+ " "+ language);
         selectedItem(R.id.nav_all_books);
     }
 
@@ -63,7 +64,7 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchQuery = query;
-                MainListFragment mainListFragment = MainListFragment.newInstance(searchQuery, fromYear, toYear, copyright);
+                MainListFragment mainListFragment = MainListFragment.newInstance(searchQuery, fromYear, toYear, copyright, language);
                 setFragment(mainListFragment);
                 searchView.clearFocus();
                 return false;
@@ -156,11 +157,12 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
     }
 
     @Override
-    public void getFilters(Boolean copyright, String fromYear, String toYear) {
+    public void getFilters(Boolean copyright, String fromYear, String toYear, String language) {
         this.copyright = copyright;
         this.fromYear = fromYear;
         this.toYear = toYear;
-        Log.d("testFiltrosGetFILTER", fromYear + " " + toYear + " " + copyright);
+        this.language = language;
+        Log.d("testFiltrosGetFILTER", fromYear + " " + toYear + " " + copyright +" " + language);
     }
 
     public void updateTextSearchView(String searchQuery) {
