@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Spinner;
@@ -21,26 +22,36 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.example.retrofitgridview.R;
+import com.example.retrofitgridview.ui.book.MainListFragment;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Calendar;
 
-public class FilterDialog extends AppCompatDialogFragment {
+public class FilterDialog extends AppCompatDialogFragment implements AdapterView.OnItemSelectedListener {
+
     private SwitchMaterial swCopyRight;
     private TextView tvFromYear;
     private TextView tvToYear;
     private FilterDialogListener listener;
     private Spinner languageSelector;
+    private Spinner categorySelector;
 
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String FROM_YEAR = "fromYear";
     public static final String TO_YEAR = "toYear";
     public static final String SWITCH_COPYRIGHT = "switchCopyright";
 
-
+    private Context context;
     private Boolean savedSwitch;
     private String savedFromYear;
     private String savedToYear;
+    private String language;
+
+
+    public FilterDialog(Context context) {
+        this.context = context;
+        loadFilters();
+    }
 
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -51,10 +62,9 @@ public class FilterDialog extends AppCompatDialogFragment {
         tvFromYear = view.findViewById(R.id.tvFromYear);
         tvToYear = view.findViewById(R.id.tvToYear);
         languageSelector = view.findViewById(R.id.spinnerLanguageSelector);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.languages, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-        languageSelector.setAdapter(adapter);
-
+        categorySelector = view.findViewById(R.id.spinnerCategorySelector);
+        setSpinner(languageSelector, R.array.languages);
+        setSpinner(categorySelector, R.array.categories);
 
         clickListener(tvFromYear);
         clickListener(tvToYear);
@@ -70,9 +80,10 @@ public class FilterDialog extends AppCompatDialogFragment {
                     String toYear = tvToYear.getText().toString();
                     listener.getFilters(copyright, fromYear, toYear);
                     saveFilters();
+                    MainListFragment mainListFragment = MainListFragment.newInstance(fromYear, toYear, copyright);
+                    ((MainActivity) getActivity()).setFragment(mainListFragment);
                 });
 
-        loadFilters();
         updateFilters();
         return builder.create();
     }
@@ -81,6 +92,16 @@ public class FilterDialog extends AppCompatDialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         listener = (FilterDialogListener) context;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        language = parent.getItemAtPosition(position).toString();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     public interface FilterDialogListener {
@@ -119,7 +140,7 @@ public class FilterDialog extends AppCompatDialogFragment {
     }
 
     public void loadFilters() {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         savedSwitch = sharedPreferences.getBoolean(SWITCH_COPYRIGHT, false);
         savedFromYear = sharedPreferences.getString(FROM_YEAR, "");
         savedToYear = sharedPreferences.getString(TO_YEAR, "");
@@ -131,4 +152,22 @@ public class FilterDialog extends AppCompatDialogFragment {
         tvToYear.setText(savedToYear);
     }
 
+    public void setSpinner(Spinner spinner, int content) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), content, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+    }
+
+    public Boolean getSavedSwitch() {
+        return savedSwitch;
+    }
+
+    public String getSavedFromYear() {
+        return savedFromYear;
+    }
+
+    public String getSavedToYear() {
+        return savedToYear;
+    }
 }

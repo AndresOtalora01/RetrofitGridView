@@ -27,8 +27,7 @@ public interface ApiInterface {
     Call<BooksResponse> getSpecificBook(@Query("search") String query);
 
     @GET("books/")
-    Call<BooksResponse> getAllBooks(@Query("page") int page,
-                                    @Query("search") String query,
+    Call<BooksResponse> getAllBooks(@Query("search") String query,
                                     @Query("copyright") Boolean copyright,
                                     @Query("author_year_start") String fromYear,
                                     @Query("author_year_end") String toYear);

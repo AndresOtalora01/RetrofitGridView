@@ -20,6 +20,7 @@
     <string name="from_year">Desde:</string>
     <string name="to_year">Hasta:</string>
     <string name="language">Idioma:</string>
+    <string name="category">Categoría:</string>
 
     <string-array name="languages">
         <item>Inglés</item>
@@ -27,4 +28,11 @@
         <item>Finlandés</item>
         <item>Español</item>
     </string-array>
+
+    <string-array name="categories">
+        <item>Literatura infantil</item>
+        <item>Sick children Fiction</item>
+    </string-array>
+
+
 </resources>

@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,9 +21,7 @@ import com.example.retrofitgridview.ui.book.MainListFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends BaseActivity implements FilterDialog.FilterDialogListener {
-    private static final String FROM_YEAR_ARG = "argFromYear";
-    private static final String TO_YEAR_ARG = "argToYear";
-    private static final String COPYRIGHT_ARG = "argCopyright";
+
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -32,12 +31,16 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
     private String fromYear;
     private String toYear;
     private Boolean copyright;
+    private FilterDialog filterDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setNavigationDrawer();
+        filterDialog = new FilterDialog(this);
+        getSavedFilters();
+        Log.d("filtrosOnCreate", fromYear + " " + toYear + " " + copyright);
         selectedItem(R.id.nav_all_books);
     }
 
@@ -60,12 +63,7 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchQuery = query;
-                MainListFragment mainListFragment = MainListFragment.newInstance(searchQuery);
-//                Bundle bundle = new Bundle();
-//                bundle.putString(FROM_YEAR_ARG, fromYear);
-//                bundle.putString(TO_YEAR_ARG, toYear);
-//                bundle.putBoolean(COPYRIGHT_ARG, copyright);
-//                mainListFragment.setArguments(bundle);
+                MainListFragment mainListFragment = MainListFragment.newInstance(searchQuery, fromYear, toYear, copyright);
                 setFragment(mainListFragment);
                 searchView.clearFocus();
                 return false;
@@ -154,7 +152,6 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
     }
 
     public void openDialog() {
-        FilterDialog filterDialog = new FilterDialog();
         filterDialog.show(getSupportFragmentManager(), "filter dialog");
     }
 
@@ -163,10 +160,11 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
         this.copyright = copyright;
         this.fromYear = fromYear;
         this.toYear = toYear;
+        Log.d("testFiltrosGetFILTER", fromYear + " " + toYear + " " + copyright);
     }
 
     public void updateTextSearchView(String searchQuery) {
-        if(searchView == null) {
+        if (searchView == null) {
             return;
         }
         if (searchQuery != null)
@@ -177,4 +175,9 @@ public class MainActivity extends BaseActivity implements FilterDialog.FilterDia
         }
     }
 
+    public void getSavedFilters() {
+        fromYear = filterDialog.getSavedFromYear();
+        toYear = filterDialog.getSavedToYear();
+        copyright = filterDialog.getSavedSwitch();
+    }
 }
